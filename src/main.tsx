@@ -4,8 +4,13 @@ import "./index.css";
 import App from "./App.tsx";
 import { RouterProvider, createBrowserRouter } from "react-router";
 import Home from "./pages/Home.tsx";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "./components/ui/sidebar.tsx";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "./components/ui/sidebar.tsx";
 import { AppSidebar } from "./components/app-sidebar.tsx";
+import Signup from "./pages/Signup.tsx";
 
 const router = createBrowserRouter([
   {
@@ -17,6 +22,10 @@ const router = createBrowserRouter([
         element: <Home />,
       },
     ],
+  },
+  {
+    path: "/signup",
+    element: <Signup />,
   },
 ]);
 

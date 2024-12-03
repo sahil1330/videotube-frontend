@@ -10,10 +10,16 @@ export const signUpSchema = z.object({
     }),
   email: z.string().email({ message: "Invalid Email Address" }).min(1).max(255),
   fullName: z.string().min(1).max(255),
-  avatar: z.string().min(1).max(255),
+  // avatar: z.instanceof(File).refine((file) => file.size < 1000000, {
+  //   message: "File size must be less than 1MB.",
+  // }),
+  avatar: z.nullable(z.string().url()),
   password: z
     .string()
     .min(6, { message: "Password must be atleast 6 characters." })
-    .max(40, {message: "Password is too long."}),
-  coverImage: z.string().min(1).max(255),
+    .max(40, { message: "Password is too long." }),
+  // coverImage: z.instanceof(File).refine((file) => file.size < 10000000, {
+  //   message: "File size must be less than 10MB.",
+  // }),
+  coverImage: z.nullable(z.string().url()),
 });
