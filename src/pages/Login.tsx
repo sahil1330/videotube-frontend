@@ -21,7 +21,6 @@ import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [file, setFile] = useState<File | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const form = useForm<z.infer<typeof signInSchema>>({
@@ -34,33 +33,20 @@ const Login = () => {
 
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
     setIsSubmitting(true);
-    console.log(data);
-    console.log(file);
-
-    const formData = new FormData();
-    formData.append("username", data.username);
-    formData.append("email", data.email);
-    formData.append("password", data.password);
-    formData.append("fullName", data.fullName);
-    formData.append("avatar", data.avatar ?? "");
-    formData.append("coverImage", data.coverImage ?? "");
     await axios
-      .post("http://localhost:8000/api/v1/users/register", formData)
-      .then((response) => response.data)
+      .post("/api/v1/users/login", data)
+      .then((res) => res.data)
       .then((data) => {
-        console.log(data);
         toast({
           title: data.message,
         });
-        navigate("/login");
+        navigate("/");
       })
       .catch((error) => {
-        console.error("Error registering user:", error);
         const errorData = error.response.data;
         const preRegex = /<pre>(.*?)<\/pre>/s;
         const match = preRegex.exec(errorData);
         const errorMessage = match ? match[1] : "An error occurred";
-
         toast({
           title: errorMessage,
           variant: "destructive",
@@ -72,49 +58,24 @@ const Login = () => {
   };
   return (
     <>
-      <div className="container text-blue-700">
+      <div className="text-blue-700">
         <h1 className="text-3xl font-bold my-8 text-center text-blue-600">
-          Sign Up
+          Sign In
         </h1>
         <div className="w-3/4 md:w-2/6 mx-auto">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
-                name="fullName"
+                name="identifier"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel>Username or Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter Your Full Name" {...field} />
-                    </FormControl>
-                    <FormDescription></FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter Your Username" {...field} />
-                    </FormControl>
-                    <FormDescription></FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter Your Email" {...field} />
+                      <Input
+                        placeholder="Enter Your Username or Email"
+                        {...field}
+                      />
                     </FormControl>
                     <FormDescription></FormDescription>
                     <FormMessage />
@@ -129,54 +90,6 @@ const Login = () => {
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input placeholder="Enter Your Password" {...field} />
-                    </FormControl>
-                    <FormDescription></FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="avatar"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Avatar</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="file"
-                        accept="images/*"
-                        onChange={(e) => {
-                          field.onChange(e.target.files?.[0]);
-                          setFile(
-                            e.target.files?.[0] instanceof File
-                              ? e.target.files[0]
-                              : null
-                          );
-                        }}
-                      />
-                    </FormControl>
-                    <FormDescription></FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="coverImage"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Cover Image</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="file"
-                        accept="images/*"
-                        onChange={(e) => {
-                          field.onChange(e.target.files?.[0]);
-                          setFile(
-                            e.target.files?.[0] ? e.target.files[0] : null
-                          );
-                        }}
-                      />
                     </FormControl>
                     <FormDescription></FormDescription>
                     <FormMessage />

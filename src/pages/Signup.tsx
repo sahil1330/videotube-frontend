@@ -74,7 +74,7 @@ const Signup = () => {
 
   return (
     <>
-      <div className="container text-blue-700">
+      <div className="text-blue-700">
         <h1 className="text-3xl font-bold my-8 text-center text-blue-600">
           Sign Up
         </h1>
