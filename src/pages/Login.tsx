@@ -1,4 +1,4 @@
-import { signUpSchema } from "@/schemas";
+import { signInSchema } from "@/schemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -19,27 +19,24 @@ import axios from "axios";
 import { useNavigate } from "react-router";
 import { useToast } from "@/hooks/use-toast";
 
-const Signup = () => {
-  // const [username, setUsername] = useState<string>("");
-  // const [usernameMessage, setUsernameMessage] = useState<string>("");
-  // const [isCheckingUsername, setIsCheckingUsername] = useState<boolean>(false);
+const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [file, setFile] = useState<File | null>(null);
   const navigate = useNavigate();
-  const { toast } = useToast()
-  const form = useForm<z.infer<typeof signUpSchema>>({
-    resolver: zodResolver(signUpSchema),
+  const { toast } = useToast();
+  const form = useForm<z.infer<typeof signInSchema>>({
+    resolver: zodResolver(signInSchema),
     defaultValues: {
-      username: "",
-      email: "",
+      identifier: "",
       password: "",
-      fullName: "",
-      avatar: undefined,
-      coverImage: undefined,
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
+  const onSubmit = async (data: z.infer<typeof signInSchema>) => {
     setIsSubmitting(true);
+    console.log(data);
+    console.log(file);
+
     const formData = new FormData();
     formData.append("username", data.username);
     formData.append("email", data.email);
@@ -51,12 +48,14 @@ const Signup = () => {
       .post("http://localhost:8000/api/v1/users/register", formData)
       .then((response) => response.data)
       .then((data) => {
+        console.log(data);
         toast({
           title: data.message,
         });
         navigate("/login");
       })
       .catch((error) => {
+        console.error("Error registering user:", error);
         const errorData = error.response.data;
         const preRegex = /<pre>(.*?)<\/pre>/s;
         const match = preRegex.exec(errorData);
@@ -71,7 +70,6 @@ const Signup = () => {
         setIsSubmitting(false);
       });
   };
-
   return (
     <>
       <div className="container text-blue-700">
@@ -149,6 +147,11 @@ const Signup = () => {
                         accept="images/*"
                         onChange={(e) => {
                           field.onChange(e.target.files?.[0]);
+                          setFile(
+                            e.target.files?.[0] instanceof File
+                              ? e.target.files[0]
+                              : null
+                          );
                         }}
                       />
                     </FormControl>
@@ -169,6 +172,9 @@ const Signup = () => {
                         accept="images/*"
                         onChange={(e) => {
                           field.onChange(e.target.files?.[0]);
+                          setFile(
+                            e.target.files?.[0] ? e.target.files[0] : null
+                          );
                         }}
                       />
                     </FormControl>
@@ -194,4 +200,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Login;
