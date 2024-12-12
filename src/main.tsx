@@ -13,6 +13,9 @@ import { AppSidebar } from "./components/app-sidebar.tsx";
 import Signup from "./pages/Signup.tsx";
 import { Toaster } from "./components/ui/toaster";
 import Login from "./pages/Login.tsx";
+import { Provider } from "react-redux";
+import store from "./store/store.ts";
+import { AuthLayout } from "./components/index.ts";
 
 const router = createBrowserRouter([
   {
@@ -25,28 +28,36 @@ const router = createBrowserRouter([
       },
       {
         path: "/signup",
-        element: <Signup />,
+        element: (
+          <AuthLayout authentication={false}>
+            <Signup />
+          </AuthLayout>
+        ),
       },
       {
         path: "/login",
-        element: <Login />,
+        element:
+          <AuthLayout authentication={false}>
+            <Login />
+          </AuthLayout>,
       },
     ],
   },
-  
 ]);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <main>
-          <SidebarTrigger />
-          <RouterProvider router={router} />
-        </main>
-        <Toaster />
-      </SidebarInset>
-    </SidebarProvider>
+    <Provider store={store}>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <main>
+            <SidebarTrigger />
+            <RouterProvider router={router} />
+          </main>
+          <Toaster />
+        </SidebarInset>
+      </SidebarProvider>
+    </Provider>
   </StrictMode>
 );

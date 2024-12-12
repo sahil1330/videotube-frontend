@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 interface Video {
   _id: string;
   videoFile: string;
+  thumbnail: string;
   title: string;
   description: string;
   duration: Float32Array;
@@ -15,7 +16,7 @@ interface Video {
 }
 
 const Home = () => {
-  const [videos, setVideos] = useState<Array>([]);
+  const [videos, setVideos] = useState<Array<Video>>([]);
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -43,7 +44,7 @@ const Home = () => {
         <div className="grid auto-rows-min gap-4 md:grid-cols-3">
           <div className="aspect-video rounded-xl bg-muted/50">
             {videos.length > 0 && videos[0] && (
-              <video src={videos[0].videoFile} autoPlay controls></video>
+              <video src={videos[0].videoFile}   onMouseEnter={(e) => e.currentTarget.play()} onMouseLeave={(e) => e.currentTarget.pause()} poster={videos[0].thumbnail}></video>
             )}
           </div>
           <div className="aspect-video rounded-xl bg-muted/50" />

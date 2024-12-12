@@ -26,6 +26,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "./ui/sidebar";
+import { useDispatch, useSelector } from "react-redux";
+import { useToast } from "@/hooks/use-toast";
+import axiosInstance from "@/utils/axiosInstance";
+import { logout } from "@/store/authSlice";
+import geterrorMessage from "@/utils/errorMessage";
+import { authState } from "@/types";
+import { Button } from "./ui/button";
 
 const data = {
   user: {
@@ -152,6 +159,28 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+
+  const dispatch = useDispatch()
+  const authStatus = useSelector((state: authState) => state.auth.status)
+  const { toast } = useToast()
+  const handleLogout = async () => {
+    // Handle logout
+    try {
+      const response = await axiosInstance.post("/users/logout");
+      if (response.data.success) {
+        dispatch(logout())
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      const errorData = geterrorMessage(error.response.data);
+      toast({
+        title: errorData,
+        variant: "destructive",
+      });
+    }
+  }
+
   return (
     <Sidebar variant="inset" {...props} className="text-blue-600">
       <SidebarHeader>
@@ -176,7 +205,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {authStatus ? (<NavUser user={data.user} />) : (<Button>Login</Button>) }
       </SidebarFooter>
     </Sidebar>
   );

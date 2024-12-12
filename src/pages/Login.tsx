@@ -18,11 +18,15 @@ import { Loader2 } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router";
 import { useToast } from "@/hooks/use-toast";
+import { useDispatch } from "react-redux";
+import { login } from "@/store/authSlice";
+import geterrorMessage from "@/utils/errorMessage";
 
 const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const dispatch = useDispatch();
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -40,13 +44,15 @@ const Login = () => {
         toast({
           title: data.message,
         });
+        dispatch(login(data.data));
+        // console.log("Login data: ", data.data.user);
         navigate("/");
       })
       .catch((error) => {
-        const errorData = error.response.data;
-        const preRegex = /<pre>(.*?)<\/pre>/s;
-        const match = preRegex.exec(errorData);
-        const errorMessage = match ? match[1] : "An error occurred";
+        // const errorData = error.response.data;
+        // const preRegex = /<pre>(.*?)<\/pre>/s;
+        // const match = preRegex.exec(errorData);
+        const errorMessage = geterrorMessage(error.response.data);
         toast({
           title: errorMessage,
           variant: "destructive",
