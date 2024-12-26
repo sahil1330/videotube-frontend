@@ -32,12 +32,14 @@ import {
 
 export function NavUser({
   user,
+  handleLogout
 }: {
   user: {
     name: string
     email: string
     avatar: string
-  }
+  },
+  handleLogout: () => Promise<void>
 }) {
   const { isMobile } = useSidebar()
 
@@ -102,7 +104,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
               Log out
             </DropdownMenuItem>

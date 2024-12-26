@@ -33,6 +33,7 @@ import { logout } from "@/store/authSlice";
 import geterrorMessage from "@/utils/errorMessage";
 import { authState } from "@/types";
 import { Button } from "./ui/button";
+import { Link } from "react-router";
 
 const data = {
   user: {
@@ -205,7 +206,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        {authStatus ? (<NavUser user={data.user} />) : (<Button>Login</Button>) }
+        {authStatus ? (<NavUser user={data.user} handleLogout={handleLogout} />) : (<Link to={"/login"}><Button>Login</Button></Link>)}
       </SidebarFooter>
     </Sidebar>
   );
