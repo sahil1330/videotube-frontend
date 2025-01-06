@@ -9,6 +9,7 @@ import Login from "./pages/Login.tsx";
 import { Provider } from "react-redux";
 import store from "./store/store.ts";
 import { AuthLayout } from "./components/index.ts";
+import UploadVideo from "./pages/UploadVideo.tsx";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,13 @@ const router = createBrowserRouter([
             <Login />
           </AuthLayout>,
       },
+      {
+        path: "/upload-video",
+        element:
+          <AuthLayout authentication={true}>
+            <UploadVideo />
+          </AuthLayout>,
+      }
     ],
   },
 ]);
@@ -41,7 +49,7 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>
-            <RouterProvider router={router} />
+      <RouterProvider router={router} />
     </Provider>
   </StrictMode>
 );

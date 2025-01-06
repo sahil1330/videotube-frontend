@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import axios from "axios";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useToast } from "@/hooks/use-toast";
 import { useDispatch } from "react-redux";
 import { login } from "@/store/authSlice";
@@ -45,7 +45,8 @@ const Login = () => {
           title: data.message,
         });
         dispatch(login(data.data));
-        // console.log("Login data: ", data.data.user);
+        console.log("Login data: ", data.data.user);
+        // console.log(useSelector((state: any) => state.auth.user));
         navigate("/");
       })
       .catch((error) => {
@@ -113,6 +114,7 @@ const Login = () => {
               )}
             </form>
           </Form>
+          <p className="text-center m-4 text-black">Not registered? <Link to={"/Signup"} className="text-blue-600">Signup</Link> here</p>
         </div>
       </div>
     </>
