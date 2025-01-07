@@ -2,6 +2,7 @@ import VideoCard from "@/components/VideoCard";
 import VideoSchema from "@/schemas/VideoSchema";
 import axiosInstance from "@/utils/axiosInstance";
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
 
 const Home = () => {
   const [videos, setVideos] = useState<Array<VideoSchema>>([]);
@@ -40,6 +41,13 @@ const Home = () => {
           <VideoCard {...videos[0]} />
         </div>
         <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
+      </div>
+      <div className="uploadVideoButton">
+        <Link to={"/upload-video"}>
+          <button className="fixed bottom-8 right-8 p-4 rounded-full bg-blue-500 text-white">
+            Upload Video
+          </button>
+        </Link>
       </div>
     </>
   );

@@ -7,9 +7,11 @@ import Home from "./pages/Home.tsx";
 import Signup from "./pages/Signup.tsx";
 import Login from "./pages/Login.tsx";
 import { Provider } from "react-redux";
-import store from "./store/store.ts";
+import store, { persistor } from "./store/store.ts";
 import { AuthLayout } from "./components/index.ts";
 import UploadVideo from "./pages/UploadVideo.tsx";
+import { PersistGate } from "redux-persist/integration/react";
+import Account from "./pages/Account.tsx";
 
 const router = createBrowserRouter([
   {
@@ -23,33 +25,40 @@ const router = createBrowserRouter([
       {
         path: "/signup",
         element: (
-          <AuthLayout authentication={false}>
+          <AuthLayout authentication={false} url="/">
             <Signup />
           </AuthLayout>
         ),
       },
       {
         path: "/login",
-        element:
-          <AuthLayout authentication={false}>
+        element: (
+          <AuthLayout authentication={false} url="/">
             <Login />
-          </AuthLayout>,
+          </AuthLayout>
+        ),
       },
       {
         path: "/upload-video",
-        element:
-          <AuthLayout authentication={true}>
+        element: (
+          <AuthLayout authentication={true} url="/upload-video">
             <UploadVideo />
-          </AuthLayout>,
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/:slug",
+        element: <Account />,
       }
     ],
   },
 ]);
-
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>
-      <RouterProvider router={router} />
+      <PersistGate loading={null} persistor={persistor}>
+        <RouterProvider router={router} />
+      </PersistGate>
     </Provider>
   </StrictMode>
 );

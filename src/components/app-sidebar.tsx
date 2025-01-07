@@ -37,17 +37,16 @@ import { Button } from "./ui/button";
 import { Link } from "react-router";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const authStatus = useSelector((state: authState) => state.auth.status)
   const { toast } = useToast()
-  console.log("auth status: ", authStatus);
-  console.log("user details: ", useSelector((state: any) => state.auth.user));
+  // console.log("auth status in sidebar: ", authStatus);
+  // console.log("user details in sidebar: ", useSelector((state: any) => state.auth.user));
   const userDetails = useSelector((state: any) => state.auth.user);
   const data = {
     user: {
       name: userDetails?.username,
-      email: userDetails?.email  ,
+      email: userDetails?.email,
       avatar: userDetails?.avatar,
     },
     navMain: [
