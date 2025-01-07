@@ -1,10 +1,12 @@
 import { Separator } from "@/components/ui/separator";
+import VideoCard from "@/components/VideoCard";
 import { useToast } from "@/hooks/use-toast";
 import axiosInstance from "@/utils/axiosInstance";
 import geterrorMessage from "@/utils/errorMessage";
 import { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
+import { set } from "zod";
 
 function Account() {
     const { slug } = useParams();
@@ -16,6 +18,7 @@ function Account() {
     // console.log("username: ", username);
     const userDetailsRef = useRef(useSelector((state: any) => state.auth.user));
     const userDetails = userDetailsRef.current;
+    const [accountVideos, setAccountVideos] = useState([]);
     useEffect(() => {
         if (userDetails && userDetails.username === username) {
             // navigate("/");
@@ -26,7 +29,9 @@ function Account() {
                     const response = await axiosInstance.get(`/users/c/${username}`);
                     userDetailsRef.current = response.data;
                     // userDetails = response.data;
-                    
+                    const accountVideosResponse = await axiosInstance.get(`/videos?sortBy=createdAt&sortType=desc&userId=${response.data._id}`);
+                    setAccountVideos(accountVideosResponse?.data?.data?.docs);
+
                 } catch (error: any) {
                     const errorMessage = geterrorMessage(error?.response?.data);
                     toast({
@@ -50,13 +55,14 @@ function Account() {
                 </div>
             </div>
             <Separator />
-
-            <div className="account-body w-full px-10 py-4">
-                <h1 className="text-2xl font-bold">Account Details</h1>
-                <div className="account-details">
-                    <p className="text-md">Full Name: {userDetails?.fullName}</p>
-                    <p className="text-md">Email: {userDetails?.email}</p>
-                </div>
+            <h2 className="px-10 py-4 text-3xl font-bold text-blue-500">Videos</h2>
+            <div className="account-videos w-full px-10 py-4">
+                {isAccountFound ? (
+                    <div className="flex flex-wrap gap-4">
+                    </div>
+                ) : (
+                    <h3 className="text-xl text-red-500">Account not found</h3>
+                )}
             </div>
         </div>
     )
