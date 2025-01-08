@@ -12,6 +12,7 @@ import { AuthLayout } from "./components/index.ts";
 import UploadVideo from "./pages/UploadVideo.tsx";
 import { PersistGate } from "redux-persist/integration/react";
 import Account from "./pages/Account.tsx";
+import WatchVideo from "./pages/WatchVideo.tsx";
 
 const router = createBrowserRouter([
   {
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
       {
         path: "/:slug",
         element: <Account />,
+      },
+      {
+        path: "/watch/:slug",
+        element: <WatchVideo />
       }
     ],
   },

@@ -1,12 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import VideoCard from "@/components/VideoCard";
 import { useToast } from "@/hooks/use-toast";
+import UserSchema from "@/schemas/UserSchema";
+import VideoSchema from "@/schemas/VideoSchema";
 import axiosInstance from "@/utils/axiosInstance";
 import geterrorMessage from "@/utils/errorMessage";
 import { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
-import { set } from "zod";
 
 function Account() {
     const { slug } = useParams();
@@ -17,8 +20,8 @@ function Account() {
     // const navigate = useNavigate(); 
     // console.log("username: ", username);
     const userDetailsRef = useRef(useSelector((state: any) => state.auth.user));
-    const userDetails = userDetailsRef.current;
-    const [accountVideos, setAccountVideos] = useState([]);
+    const [accountVideos, setAccountVideos] = useState<Array<VideoSchema>>([]);
+    let userDetails: UserSchema | null = null;
     useEffect(() => {
         if (userDetails && userDetails.username === username) {
             // navigate("/");
@@ -29,9 +32,6 @@ function Account() {
                     const response = await axiosInstance.get(`/users/c/${username}`);
                     userDetailsRef.current = response.data;
                     // userDetails = response.data;
-                    const accountVideosResponse = await axiosInstance.get(`/videos?sortBy=createdAt&sortType=desc&userId=${response.data._id}`);
-                    setAccountVideos(accountVideosResponse?.data?.data?.docs);
-
                 } catch (error: any) {
                     const errorMessage = geterrorMessage(error?.response?.data);
                     toast({
@@ -42,8 +42,14 @@ function Account() {
                 }
             })();
         }
-    }, [userDetails, username, toast]);
-    return (
+        (async function () {
+            const accountVideosResponse = await axiosInstance.get(`/videos?sortBy=createdAt&sortType=desc&userId=${userDetailsRef.current?._id}`);
+            setAccountVideos(accountVideosResponse?.data?.data?.docs);
+            console.log(accountVideosResponse?.data?.data?.docs);
+        })()
+    }, [toast, userDetails, username]);
+    userDetails = userDetailsRef.current;
+    return isAccountFound ? (
         <div>
             <div className="account-header flex items-center w-full py-4 px-10 gap-10 text-blue-600">
                 <div className="account-avatar w-40 h-40 border rounded-full overflow-hidden">
@@ -52,20 +58,25 @@ function Account() {
                 <div className="account-details">
                     <h1 className="text-3xl font-bold">{userDetails?.username}</h1>
                     <p className="text-md">{userDetails?.email}</p>
+                    {isOwner && (
+                        <div className="account-actions my-4">
+                            <Button variant="outline" className="outline-blue-600 mx-2" size="sm">Edit Profile</Button>
+                            <Button variant="outline" className="outline-blue-600 mx-2" size="sm">Manage Videos</Button>
+                        </div>
+                    )}
                 </div>
             </div>
             <Separator />
             <h2 className="px-10 py-4 text-3xl font-bold text-blue-500">Videos</h2>
-            <div className="account-videos w-full px-10 py-4">
-                {isAccountFound ? (
-                    <div className="flex flex-wrap gap-4">
-                    </div>
-                ) : (
-                    <h3 className="text-xl text-red-500">Account not found</h3>
-                )}
+            <div className="account-videos w-full py-4">
+                <div className="grid auto-rows-min gap-4 md:grid-cols-3 w-11/12 mx-auto">
+                    {accountVideos.length > 0 && accountVideos.map((video, index) => (
+                        <VideoCard key={index} {...video} />
+                    ))}
+                </div>
             </div>
-        </div>
-    )
+        </div >
+    ) : ("Account not found")
 }
 
 export default Account
