@@ -3,6 +3,7 @@ import UserSchema from "./UserSchema";
 interface VideoSchema {
   _id: string;
   videoFile: string;
+  videoFilePublicId: string;
   thumbnail: string;
   title: string;
   description: string;

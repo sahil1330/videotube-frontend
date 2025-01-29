@@ -5,13 +5,13 @@ import * as React from "react";
 import {
   BookOpen,
   Bot,
-  Frame,
   LifeBuoy,
   Map,
   PieChart,
   Send,
   Settings2,
   SquareTerminal,
+  Video,
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
@@ -148,11 +148,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: Send,
       },
     ],
-    projects: [
+    you: [
       {
-        name: "Design Engineering",
-        url: "#",
-        icon: Frame,
+        name: "My Videos",
+        url: "/"+userDetails?.username+"/videos",
+        icon: Video,
       },
       {
         name: "Sales & Marketing",
@@ -185,7 +185,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar variant="inset" {...props} className="text-blue-600">
-      <SidebarHeader>
+      <SidebarHeader> 
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
@@ -203,7 +203,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavProjects projects={data.you} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
