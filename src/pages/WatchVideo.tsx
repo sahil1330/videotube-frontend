@@ -11,6 +11,7 @@ import { useParams } from "react-router";
 
 function WatchVideo() {
     const { slug } = useParams();
+    console.log(slug)
     const [video, setVideo] = useState<VideoSchema>();
     const { toast } = useToast();
     useEffect(() => {
@@ -18,6 +19,7 @@ function WatchVideo() {
             try {
                 const response = await axiosInstance.get(`/videos/${slug}`);
                 setVideo(response.data.data);
+                console.log("Response " + response.data)
             } catch (error) {
                 console.log(error);
                 const errorMessage = geterrorMessage((error as any)?.response?.data);
@@ -28,15 +30,19 @@ function WatchVideo() {
             }
         }
         fetchVideo();
-    }, [])
+        console.log("Video " + video)
+    }, []);
     return (
         <>
             <div className="wrapper w-5/6 flex mx-auto">
-                <div className="video-player flex mx-auto ">
-                    <div className="aspect-video rounded-xl bg-muted/50 w-1/2" >
+                <div className="video-player flex ">
+                    <div className="aspect-video rounded-xl bg-muted/50 w-full" >
                         {video && (
-                            <VideoCard {...video} />
+                            <div>
+                                <TransformedVideo videoPublicId={video.videoFilePublicId} poster={video.thumbnail} controls={true} />
+                            </div>
                         )}
+
                     </div>
                 </div>
             </div>

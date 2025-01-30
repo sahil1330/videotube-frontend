@@ -8,7 +8,7 @@ import { FocusOn } from "@cloudinary/url-gen/qualifiers/focusOn";
 import { Gravity } from "@cloudinary/url-gen/qualifiers";
 import { AutoFocus } from "@cloudinary/url-gen/qualifiers/autoFocus";
 
-function TransformedVideo({ videoPublicId, poster }: { videoPublicId: string, poster: string }) {
+function TransformedVideo({ videoPublicId, poster, controls }: { videoPublicId: string, poster: string, controls: boolean }) {
     // Create and configure your Cloudinary instance.
     const cld = new Cloudinary({
         cloud: {
@@ -25,8 +25,8 @@ function TransformedVideo({ videoPublicId, poster }: { videoPublicId: string, po
         .roundCorners(byRadius(20));    // Round the corners.
     return (
         <>
-            {poster ? (<AdvancedVideo cldVid={myVideo} onMouseEnter={(e) => e.currentTarget.play()} onMouseLeave={(e) => e.currentTarget.pause()} poster={poster} />) : (
-                <AdvancedVideo cldVid={myVideo} cldPoster={myVideo.format('jpg')} />
+            {poster ? (<AdvancedVideo cldVid={myVideo} controls={controls} onMouseEnter={(e) => e.currentTarget.play()} onMouseLeave={(e) => e.currentTarget.pause()} poster={poster} />) : (
+                <AdvancedVideo cldVid={myVideo} controls={controls} cldPoster={myVideo.format('jpg')} />
             )}
         </>
     )
