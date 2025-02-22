@@ -1,7 +1,15 @@
 type authState = {
   auth: {
     status: boolean;
-    user: null;
+    user: {
+      _id: string;
+      username: string;
+      email: string;
+      fullName: string;
+      avatar: string;
+      coverImage: string;
+      watchHistory: string[];
+    } | null;
   };
 };
 

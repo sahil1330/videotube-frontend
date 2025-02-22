@@ -9,7 +9,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import geterrorMessage from "@/utils/errorMessage";
 import { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
 function Account() {
     const { slug } = useParams();
@@ -17,7 +17,7 @@ function Account() {
     const [isOwner, setIsOwner] = useState(false);
     const [isAccountFound, setIsAccountFound] = useState(true);
     const { toast } = useToast();
-    // const navigate = useNavigate(); 
+    const navigate = useNavigate();
     // console.log("username: ", username);
     const userDetailsRef = useRef(useSelector((state: any) => state.auth.user));
     const [accountVideos, setAccountVideos] = useState<Array<VideoSchema>>([]);
@@ -60,7 +60,7 @@ function Account() {
                     <p className="text-md">{userDetails?.email}</p>
                     {isOwner && (
                         <div className="account-actions my-4">
-                            <Button variant="outline" className="outline-blue-600 mx-2" size="sm">Edit Profile</Button>
+                            <Button variant="outline" className="outline-blue-600 mx-2" onClick={() => navigate("/edit-profile")} size="sm">Edit Profile</Button>
                             <Button variant="outline" className="outline-blue-600 mx-2" size="sm">Manage Videos</Button>
                         </div>
                     )}

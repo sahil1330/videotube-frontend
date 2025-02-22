@@ -9,7 +9,7 @@ const Header = () => {
       <h1 className="text-2xl md:text-3xl font-bold text-blue-600">
         <NavLink to={"/"} className="flex items-center ">
           <Suspense fallback={<Skeleton className="w-16 h-16" />}>
-            <img src="videotube_logo.png" alt="VideoTube" width={64} />
+            <img src="/videotube_logo.png" alt="VideoTube" width={64} />
           </Suspense>
           VideoTube
         </NavLink>

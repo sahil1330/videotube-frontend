@@ -44,7 +44,7 @@ const Login = () => {
         toast({
           title: data.message,
         });
-        dispatch(login(data.data));
+        dispatch(login(data.data.user));
         console.log("Login data: ", data.data.user);
         // console.log(useSelector((state: any) => state.auth.user));
         navigate("/");

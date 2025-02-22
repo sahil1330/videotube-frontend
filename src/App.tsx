@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import axiosInstance from "./utils/axiosInstance";
 import { login, logout } from "./store/authSlice";
-import { useToast } from "./hooks/use-toast";
+// import { useToast } from "./hooks/use-toast";
 import { Toaster } from "./components/ui/toaster";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 import { AppSidebar } from "./components/app-sidebar";
@@ -14,7 +14,7 @@ import { AppSidebar } from "./components/app-sidebar";
 function App() {
   const [loading, setLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
-  const { toast } = useToast();
+  // const { toast } = useToast();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -49,7 +49,7 @@ function App() {
     };
 
     fetchUser();
-  }, [dispatch, toast]);
+  }, []);
 
   return !loading ? (
     <>

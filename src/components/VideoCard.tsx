@@ -7,7 +7,6 @@ import { Skeleton } from "./ui/skeleton"
 import TransformedVideo from "./ImageTransformation.tsx/TransformedVideo"
 
 function VideoCard(video: VideoSchema) {
-    console.log(video)
 
     return (
         <>
@@ -15,7 +14,7 @@ function VideoCard(video: VideoSchema) {
                 <div className="flex flex-col">
                     <Suspense fallback={<Skeleton className="h-[125px] w-[250px] rounded-xl" />}>
                         <div className="aspect-video rounded-xl bg-muted/50">
-                            <TransformedVideo videoPublicId={video.videoFilePublicId} poster={video?.thumbnail} controls={false} />
+                            <TransformedVideo videoPublicId={video.videoFilePublicId} poster={video?.thumbnail} controls={false} width={"100%"} height={"100%"} />
                             {/* <video src={video.videoFile} onMouseEnter={(e) => e.currentTarget.play()} onMouseLeave={(e) => e.currentTarget.pause()} poster={video.thumbnail} className="rounded-lg"></video> */}
                         </div>
                     </Suspense>

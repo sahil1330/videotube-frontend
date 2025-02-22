@@ -14,6 +14,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import Account from "./pages/Account.tsx";
 import WatchVideo from "./pages/WatchVideo.tsx";
 import UserVideos from "./pages/UserVideos.tsx";
+import EditProfile from "./pages/EditProfile.tsx";
 
 const router = createBrowserRouter([
   {
@@ -58,7 +59,18 @@ const router = createBrowserRouter([
       },
       {
         path: "/:slug",
-        element: <Account />,
+        element:
+          <AuthLayout authentication={true} url="/">
+            <Account />
+          </AuthLayout>,
+      },
+      {
+        path: "/edit-profile",
+        element: (
+          <AuthLayout authentication={true} url="/edit-profile">
+            <EditProfile />
+          </AuthLayout>
+        ),
       },
       {
         path: "/watch/:slug",
