@@ -134,8 +134,28 @@ function WatchVideo() {
         });
     }
     const handleDownload = async () => {
-        window.open(video?.videoFile, "_blank");
-
+        try {
+            const response = await fetch(video?.videoFile as string);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = video?.title as string;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            toast({
+                title: "Video download started",
+                variant: "default",
+            });
+        } catch (error) {
+            const errorMessage = geterrorMessage((error as any)?.response?.data);
+            toast({
+                title: errorMessage,
+                variant: "destructive",
+            });
+        }
     }
     return (
         <>

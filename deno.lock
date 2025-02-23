@@ -24,6 +24,7 @@
     "npm:class-variance-authority@~0.7.1": "0.7.1",
     "npm:cloudinary-video-player@^2.3.3": "2.3.3_video.js@8.21.0",
     "npm:clsx@^2.1.1": "2.1.1",
+    "npm:date-fns@^4.1.0": "4.1.0",
     "npm:eslint-plugin-react-hooks@5": "5.1.0_eslint@9.20.1",
     "npm:eslint-plugin-react-refresh@~0.4.14": "0.4.19_eslint@9.20.1",
     "npm:eslint@^9.15.0": "9.20.1",
@@ -1435,6 +1436,9 @@
         "ua-parser-js"
       ]
     },
+    "date-fns@4.1.0": {
+      "integrity": "sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg=="
+    },
     "debug@4.4.0": {
       "integrity": "sha512-6WTZ/IxCY/T6BALoZHaE4ctp9xm+Z5kY/pzYaCHRFeyVhojxlrm+46y68HA6hr0TcwEssoxNiDEUJQjfPZ/RYA==",
       "dependencies": [
@@ -2820,6 +2824,7 @@
         "npm:class-variance-authority@~0.7.1",
         "npm:cloudinary-video-player@^2.3.3",
         "npm:clsx@^2.1.1",
+        "npm:date-fns@^4.1.0",
         "npm:eslint-plugin-react-hooks@5",
         "npm:eslint-plugin-react-refresh@~0.4.14",
         "npm:eslint@^9.15.0",
