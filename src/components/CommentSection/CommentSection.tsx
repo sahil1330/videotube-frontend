@@ -30,6 +30,10 @@ function CommentSection({ videoId, userDetails }: CommentSectionProps) {
     const [comments, setComments] = useState<any[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isCommentFocused, setIsCommentFocused] = useState(false);
+    const [isCommentLiked, setIsCommentLiked] = useState(false);
+    const [isCommentDisliked, setIsCommentDisliked] = useState(false);
+    const [commentLikes, setCommentLikes] = useState(0);
+
     // const [loading, setLoading] = useState(true);
     const { toast } = useToast();
     useEffect(() => {
@@ -67,6 +71,36 @@ function CommentSection({ videoId, userDetails }: CommentSectionProps) {
             setIsSubmitting(false);
         }
     }
+    const handleCommentLike = async (commentId: string) => {
+        try {
+            const response = await axiosInstance.post(`/likes/toggle-comment-like/${commentId}`);
+            console.log("Comment liked", response.data);
+            setIsCommentLiked(true);
+            setCommentLikes(response.data.data.likes);
+        } catch (error) {
+            const errorMessage = geterrorMessage((error as any)?.response?.data);
+            toast({
+                title: errorMessage,
+                variant: "destructive",
+            });
+        }
+    }
+    const handleCommentDislike = async (commentId: string) => {
+        if (isCommentLiked) {
+            setIsCommentLiked(false);
+            setCommentLikes(commentLikes - 1);
+            setIsCommentDisliked(true);
+        }
+        else if (isCommentDisliked) {
+            setIsCommentDisliked(false);
+            // setCommentLikes(commentLikes - 1);
+        }
+        else {
+            setIsCommentDisliked(true);
+            setCommentLikes(commentLikes + 1);
+        }
+    }
+
     return (
         <div className="flex flex-1 flex-col gap-4 pt-4">
             <h2 className="text-xl">Comments</h2>
@@ -131,11 +165,11 @@ function CommentSection({ videoId, userDetails }: CommentSectionProps) {
                                 </div>
                                 <p className="text-sm mt-1">{comment.content}</p>
                                 <div className="flex items-center gap-4 mt-2">
-                                    <button className="flex items-center gap-1 text-sm hover:text-gray-700">
-                                        <span><ThumbsUpIcon className="w-4 h-4" /></span> {comment.likes || 0}
+                                    <button className="flex items-center gap-1 text-sm hover:text-gray-700" onClick={() => handleCommentLike(comment._id)}>
+                                        <span>{isCommentLiked ? <ThumbsUpIcon className="w-4 h-4" fill="currentColor" /> : <ThumbsUpIcon className="w-4 h-4" />}</span> {comment.likes || 0}
                                     </button>
-                                    <button className="flex items-center gap-1 text-sm hover:text-gray-700">
-                                        <span><ThumbsDownIcon className="w-4 h-4" /></span>
+                                    <button className="flex items-center gap-1 text-sm hover:text-gray-700" onClick={() => handleCommentDislike(comment._id)}>
+                                        <span>{isCommentDisliked ? <ThumbsDownIcon className="w-4 h-4" fill="currentColor" /> : <ThumbsDownIcon className="w-4 h-4" />}</span>
                                     </button>
                                     <button className="text-sm font-medium hover:text-gray-700">
                                         Reply

@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// import TransformedImage from "@/components/ImageTransformation.tsx/TransformedImage";
-import CommentSection from "@/components/CommentSection/CommentSection";
-import TransformedVideo from "@/components/ImageTransformation.tsx/TransformedVideo";
+import { CommentSection } from "@/components";
+import { TransformedVideo } from "@/components";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-// import VideoCard from "@/components/VideoCard";
 import { useToast } from "@/hooks/use-toast";
 import VideoSchema from "@/schemas/VideoSchema";
 import { authState } from "@/types";

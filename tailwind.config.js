@@ -59,9 +59,53 @@ export default {
   				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
+  			},
+  			brand: {
+  				DEFAULT: 'hsl(var(--brand))',
+  				foreground: 'hsl(var(--brand-foreground))'
+  			},
+  			highlight: {
+  				DEFAULT: 'hsl(var(--highlight))',
+  				foreground: 'hsl(var(--highlight-foreground))'
   			}
+  		},
+  		fontFamily: {
+  			heading: [
+  				'var(--font-heading)',
+  				'ui-sans-serif',
+  				'-apple-system',
+  				'BlinkMacSystemFont',
+  				'Segoe UI Variable Display',
+  				'Segoe UI',
+  				'Helvetica',
+  				'Apple Color Emoji',
+  				'Arial',
+  				'sans-serif',
+  				'Segoe UI Emoji',
+  				'Segoe UI Symbol',
+  				'Noto Color Emoji'
+  			],
+  			mono: [
+  				'var(--font-mono)',
+  				...require("tailwindcss/defaultTheme").fontFamily.mono
+  			],
+  			sans: [
+  				'var(--font-sans)',
+  				'ui-sans-serif',
+  				'-apple-system',
+  				'BlinkMacSystemFont',
+  				'Segoe UI Variable Display',
+  				'Segoe UI',
+  				'Helvetica',
+  				'Apple Color Emoji',
+  				'Arial',
+  				'sans-serif',
+  				'Segoe UI Emoji',
+  				'Segoe UI Symbol',
+  				'Noto Color Emoji'
+  			]
   		}
   	}
   },
-  plugins: [import("tailwindcss-animate")],
+  plugins: [import("tailwindcss-animate"), require("tailwind-scrollbar-hide")],
 };

@@ -1,4 +1,4 @@
-import VideoCard from "@/components/VideoCard";
+import { VideoCard } from "@/components";
 import VideoSchema from "@/schemas/VideoSchema";
 import axiosInstance from "@/utils/axiosInstance";
 import { useEffect, useState } from "react";
