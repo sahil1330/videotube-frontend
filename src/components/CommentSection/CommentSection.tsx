@@ -30,19 +30,59 @@ function CommentSection({ videoId, userDetails }: CommentSectionProps) {
     const [comments, setComments] = useState<any[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isCommentFocused, setIsCommentFocused] = useState(false);
-    const [isCommentLiked, setIsCommentLiked] = useState(false);
-    const [isCommentDisliked, setIsCommentDisliked] = useState(false);
-    const [commentLikes, setCommentLikes] = useState(0);
-
-    // const [loading, setLoading] = useState(true);
+    // Track liked and disliked comments by ID
+    const [likedComments, setLikedComments] = useState<Record<string, boolean>>({});
+    const [dislikedComments, setDislikedComments] = useState<Record<string, boolean>>({});
+    // Store likes count by comment ID
+    const [commentLikes, setCommentLikes] = useState<Record<string, number>>({});
     const { toast } = useToast();
+
     useEffect(() => {
-        (async () => {
-            const response = await axiosInstance.get(`/comments/get-comments/${videoId}?page=1&limit=10`);
-            console.log("Comments", response.data.data.docs);
-            setComments(response.data.data.docs)
-        })()
-    }, [])
+        const fetchCommentsAndLikes = async () => {
+            try {
+                const response = await axiosInstance.get(`/comments/get-comments/${videoId}?page=1&limit=10`);
+                console.log("Comments", response.data.data.docs);
+                const fetchedComments = response.data.data.docs;
+                setComments(fetchedComments);
+
+                // Fetch likes for each comment
+                const likesData: Record<string, number> = {};
+                const userLikeStatus: Record<string, boolean> = {};
+                const userDislikeStatus: Record<string, boolean> = {};
+
+                // Process each comment to get likes and user's like status
+                for (const comment of fetchedComments) {
+                    const commentLikesResponse = await axiosInstance.get(`/likes/get-comment-likes/${comment._id}`);
+
+                    // Store likes count
+                    likesData[comment._id] = commentLikesResponse.data.data.commentLikesCount || 0;
+
+                    // If the API provides user's like/dislike status, store it
+                    if (commentLikesResponse.data.data.hasUserLiked) {
+                        userLikeStatus[comment._id] = true;
+                    }
+                    if (commentLikesResponse.data.data.hasUserDisliked) {
+                        userDislikeStatus[comment._id] = true;
+                    }
+                }
+
+                setCommentLikes(likesData);
+                setLikedComments(userLikeStatus);
+                setDislikedComments(userDislikeStatus);
+            } catch (error) {
+                const errorMessage = geterrorMessage((error as any)?.response?.data);
+                toast({
+                    title: "Failed to load comments",
+                    description: errorMessage,
+                    variant: "destructive",
+                });
+            }
+        };
+
+        if (videoId) {
+            fetchCommentsAndLikes();
+        }
+    }, [videoId, toast]);
 
     const form = useForm<z.infer<typeof commentSchema>>({
         resolver: zodResolver(commentSchema),
@@ -74,9 +114,33 @@ function CommentSection({ videoId, userDetails }: CommentSectionProps) {
     const handleCommentLike = async (commentId: string) => {
         try {
             const response = await axiosInstance.post(`/likes/toggle-comment-like/${commentId}`);
-            console.log("Comment liked", response.data);
-            setIsCommentLiked(true);
-            setCommentLikes(response.data.data.likes);
+
+            if (response.data.status === 201) {
+                // User liked the comment
+                setLikedComments(prev => ({ ...prev, [commentId]: true }));
+                setDislikedComments(prev => ({ ...prev, [commentId]: false }));
+                setCommentLikes(prev => ({
+                    ...prev,
+                    [commentId]: (prev[commentId] || 0) + 1
+                }));
+            }
+            else if (response.data.status === 200) {
+                // User unliked the comment
+                if (likedComments[commentId]) {
+                    setCommentLikes(prev => ({
+                        ...prev,
+                        [commentId]: Math.max(0, (prev[commentId] || 0) - 1)
+                    }));
+                }
+                setLikedComments(prev => ({ ...prev, [commentId]: false }));
+            }
+
+            // Refresh the actual count from server to stay in sync
+            const commentLikesResponse = await axiosInstance.get(`/likes/get-comment-likes/${commentId}`);
+            setCommentLikes(prev => ({
+                ...prev,
+                [commentId]: commentLikesResponse.data.data.commentLikesCount || 0
+            }));
         } catch (error) {
             const errorMessage = geterrorMessage((error as any)?.response?.data);
             toast({
@@ -84,22 +148,41 @@ function CommentSection({ videoId, userDetails }: CommentSectionProps) {
                 variant: "destructive",
             });
         }
-    }
+    };
+
+    // Add a similar function for handling dislikes
     const handleCommentDislike = async (commentId: string) => {
-        if (isCommentLiked) {
-            setIsCommentLiked(false);
-            setCommentLikes(commentLikes - 1);
-            setIsCommentDisliked(true);
+        try {
+            const response = await axiosInstance.post(`/likes/toggle-comment-like/${commentId}`);
+
+            if (response.data.status === 200) {
+                // User disliked the comment
+                setDislikedComments(prev => ({ ...prev, [commentId]: true }));
+                setLikedComments(prev => ({ ...prev, [commentId]: false }));
+
+                // If they previously liked it, reduce the like count
+                if (likedComments[commentId]) {
+                    setCommentLikes(prev => ({
+                        ...prev,
+                        [commentId]: Math.max(0, (prev[commentId] || 0) - 1)
+                    }));
+                }
+            }
+
+            // Refresh the count from server
+            const commentLikesResponse = await axiosInstance.get(`/likes/get-comment-likes/${commentId}`);
+            setCommentLikes(prev => ({
+                ...prev,
+                [commentId]: commentLikesResponse.data.data.commentLikesCount || 0
+            }));
+        } catch (error) {
+            const errorMessage = geterrorMessage((error as any)?.response?.data);
+            toast({
+                title: errorMessage,
+                variant: "destructive",
+            });
         }
-        else if (isCommentDisliked) {
-            setIsCommentDisliked(false);
-            // setCommentLikes(commentLikes - 1);
-        }
-        else {
-            setIsCommentDisliked(true);
-            setCommentLikes(commentLikes + 1);
-        }
-    }
+    };
 
     return (
         <div className="flex flex-1 flex-col gap-4 pt-4">
@@ -165,11 +248,28 @@ function CommentSection({ videoId, userDetails }: CommentSectionProps) {
                                 </div>
                                 <p className="text-sm mt-1">{comment.content}</p>
                                 <div className="flex items-center gap-4 mt-2">
-                                    <button className="flex items-center gap-1 text-sm hover:text-gray-700" onClick={() => handleCommentLike(comment._id)}>
-                                        <span>{isCommentLiked ? <ThumbsUpIcon className="w-4 h-4" fill="currentColor" /> : <ThumbsUpIcon className="w-4 h-4" />}</span> {comment.likes || 0}
+                                    <button
+                                        className="flex items-center gap-1 text-sm hover:text-gray-700"
+                                        onClick={() => handleCommentLike(comment._id)}
+                                    >
+                                        <span>
+                                            {likedComments[comment._id] ?
+                                                <ThumbsUpIcon className="w-4 h-4" fill="currentColor" /> :
+                                                <ThumbsUpIcon className="w-4 h-4" />
+                                            }
+                                        </span>
+                                        {commentLikes[comment._id] || 0}
                                     </button>
-                                    <button className="flex items-center gap-1 text-sm hover:text-gray-700" onClick={() => handleCommentDislike(comment._id)}>
-                                        <span>{isCommentDisliked ? <ThumbsDownIcon className="w-4 h-4" fill="currentColor" /> : <ThumbsDownIcon className="w-4 h-4" />}</span>
+                                    <button
+                                        className="flex items-center gap-1 text-sm hover:text-gray-700"
+                                        onClick={() => handleCommentDislike(comment._id)}
+                                    >
+                                        <span>
+                                            {dislikedComments[comment._id] ?
+                                                <ThumbsDownIcon className="w-4 h-4" fill="currentColor" /> :
+                                                <ThumbsDownIcon className="w-4 h-4" />
+                                            }
+                                        </span>
                                     </button>
                                     <button className="text-sm font-medium hover:text-gray-700">
                                         Reply

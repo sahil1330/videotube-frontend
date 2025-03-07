@@ -31,13 +31,6 @@ const Home = () => {
     <>
       <div className="flex flex-1 flex-col gap-4 p-8 pt-0">
         <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-          <div className="aspect-video rounded-xl bg-muted/50">
-            {videos.length > 0 && videos[0] && (
-              <video src={videos[0].videoFile} onMouseEnter={(e) => e.currentTarget.play()} onMouseLeave={(e) => e.currentTarget.pause()} poster={videos[0].thumbnail}></video>
-            )}
-          </div>
-          <div className="aspect-video rounded-xl bg-muted/50" />
-          <div className="aspect-video rounded-xl bg-muted/50" />
           {videos.map((video) => (
             <VideoCard key={video._id} {...video} />
           ))}

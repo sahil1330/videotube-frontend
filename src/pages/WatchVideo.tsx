@@ -13,11 +13,12 @@ import { Download, Share, ThumbsDown, ThumbsUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router";
-
+import { formatDistanceToNow } from "date-fns";
 function WatchVideo() {
     const { slug } = useParams();
     const [video, setVideo] = useState<VideoSchema>();
     const [subscribers, setSubscribers] = useState<number>(0);
+    const [otherVideos, setOtherVideos] = useState<Array<VideoSchema>>([]);
     // const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
     const [subscribedStatus, setSubscribedStatus] = useState({
         value: "Subscribe",
@@ -64,6 +65,25 @@ function WatchVideo() {
         fetchVideo();
     }, []);
 
+    useEffect(() => {
+        const fetchOtherVideos = async () => {
+            if (!video?.owner?._id) return;
+
+            try {
+                const response = await axiosInstance.get(`/videos?sortBy=createdAt&sortType=desc&userId=${video.owner._id}`);
+                setOtherVideos(response.data.data.docs);
+                console.log(response.data.data.docs);
+            } catch (error) {
+                const errorMessage = geterrorMessage((error as any)?.response?.data);
+                toast({
+                    title: errorMessage,
+                    variant: "destructive",
+                });
+            }
+        }
+        fetchOtherVideos();
+    }, [video]);
+
     const toggleSubscription = async () => {
         try {
             await axiosInstance.post(`/subscriptions/toggle/${video?.owner._id}`);
@@ -101,6 +121,7 @@ function WatchVideo() {
     const handleLike = async () => {
         if (isLiked) {
             setIsLiked(false);
+            setLikes(likes - 1);
         }
         else {
             setIsLiked(true);
@@ -133,6 +154,7 @@ function WatchVideo() {
     }
     const handleDownload = async () => {
         try {
+            console.log('Inn download')
             const response = await fetch(video?.videoFile as string);
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
@@ -157,7 +179,7 @@ function WatchVideo() {
     }
     return (
         <>
-            <div className="wrapper w-11/12  mx-auto flex ">
+            <div className="wrapper w-11/12  mx-auto flex md:flex-row flex-col gap-4 py-4">
                 {video && (
                     <div className="left lg:w-4/6">
                         <div className="video-player">
@@ -177,14 +199,14 @@ function WatchVideo() {
                                         </Avatar>
                                     </div>
                                     <Link to={`/${video.owner.username}`} className="video-owner-details">
-                                        <p className="text-lg font-bold">{video.owner.fullName}</p>
-                                        <p className="text-md">{subscribers} subscribers</p>
+                                        <p className="md:text-lg text-sm font-bold">{video.owner.fullName.substring(0, 10)}</p>
+                                        <p className="md:text-md text-sm">{subscribers} subscribers</p>
                                     </Link>
                                     {/* <Separator orientation="vertical" className="border border-black " /> */}
 
                                     {userDetails?._id !== video.owner?._id && (
                                         // isSubscribed ? (<Button variant="secondary" className="">Unsubscribe</Button>) : (<Button variant="secondary" className="">Subscribe</Button>)
-                                        <Button variant="secondary" className="" onClick={handleSubscribe}>{subscribedStatus.
+                                        <Button variant="secondary" onClick={handleSubscribe}>{subscribedStatus.
                                             value}</Button>
                                     )}
                                 </div>
@@ -197,10 +219,12 @@ function WatchVideo() {
                                         </div>
                                     </div>
                                     <div className="shareButton">
-                                        <Button variant="secondary" onClick={handleShare}><Share /> Share</Button>
+                                        <Button variant="secondary" onClick={handleShare}>
+                                            <Share /> <span className="hidden md:inline">Share</span>
+                                        </Button>
                                     </div>
                                     <div className="downloadButton">
-                                        <Button variant="secondary" onClick={handleDownload}><Download /> Download</Button>
+                                        <Button variant="secondary" onClick={handleDownload}><Download /> <span className="hidden md:inline">Download</span></Button>
                                     </div>
                                 </div>
                             </div>
@@ -226,6 +250,29 @@ function WatchVideo() {
                         <CommentSection videoId={video._id} userDetails={userDetails} />
                     </div>
                 )}
+                <div className="right md:w-2/6  px-4">
+                    <div className="user-videos">
+                        <h1 className="text-2xl text-center font-bold">Other Videos</h1>
+                        <div className="user-videos-list flex flex-col gap-4 py-6">
+                            {
+                                otherVideos.length > 0 && otherVideos.map((video, index) =>
+
+                                    <Link to={`/watch/${video._id}`} key={index}>
+                                        <div className="user-video-card flex">
+                                            <video src={video.videoFile} poster={video.thumbnail} muted autoPlay={false} onMouseEnter={(e) => e.currentTarget.play()} onMouseLeave={e => e.currentTarget.pause()}
+                                                width='50%' className="rounded-md" />
+                                            <div>
+                                                <h1 className="md:text-sm text-lg font-bold p-2">{video.title}</h1>
+                                                <p className="text-md px-2">{formatDistanceToNow(new Date(video.createdAt), { addSuffix: true })}</p>
+                                            </div>
+                                        </div>
+                                    </Link>
+
+                                )
+                            }
+                        </div>
+                    </div>
+                </div>
             </div >
         </>
     )

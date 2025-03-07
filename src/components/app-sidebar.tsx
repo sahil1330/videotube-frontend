@@ -3,17 +3,17 @@
 
 import * as React from "react";
 import {
-  BookOpen,
-  Bot,
+  History,
+  Home,
   LifeBuoy,
+  LucideVideo,
   Map,
   PieChart,
   Send,
-  Settings2,
-  SquareTerminal,
+  SubscriptIcon,
   Video,
 } from "lucide-react";
-
+import { useEffect, useState } from "react";
 import { NavMain } from "./nav-main";
 import { NavProjects } from "./nav-projects";
 import { NavSecondary } from "./nav-secondary";
@@ -39,10 +39,12 @@ import { Link } from "react-router";
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const dispatch = useDispatch();
   const authStatus = useSelector((state: authState) => state.auth.status)
+  const [subscriptions, setSubscriptions] = useState<any[]>([]);
   const { toast } = useToast()
   // console.log("auth status in sidebar: ", authStatus);
   // console.log("user details in sidebar: ", useSelector((state: any) => state.auth.user));
   const userDetails = useSelector((state: any) => state.auth.user);
+
   const data = {
     user: {
       name: userDetails?.username,
@@ -51,89 +53,31 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     navMain: [
       {
-        title: "Playground",
-        url: "#",
-        icon: SquareTerminal,
+        title: "Home",
+        url: "/",
+        icon: Home,
         isActive: true,
-        items: [
-          {
-            title: "History",
-            url: "#",
-          },
-          {
-            title: "Starred",
-            url: "#",
-          },
-          {
-            title: "Settings",
-            url: "#",
-          },
-        ],
       },
       {
-        title: "Models",
+        title: "Subscriptions",
         url: "#",
-        icon: Bot,
-        items: [
-          {
-            title: "Genesis",
-            url: "#",
-          },
-          {
-            title: "Explorer",
-            url: "#",
-          },
-          {
-            title: "Quantum",
-            url: "#",
-          },
-        ],
+        icon: SubscriptIcon,
+        items: subscriptions.map((sub) => ({
+          icon: sub.channel.avatar,
+          id: sub.channel._id,
+          title: sub.channel.fullName,
+          url: `/${sub.channel.username}`
+        }))
       },
       {
-        title: "Documentation",
+        title: "Playlists",
         url: "#",
-        icon: BookOpen,
-        items: [
-          {
-            title: "Introduction",
-            url: "#",
-          },
-          {
-            title: "Get Started",
-            url: "#",
-          },
-          {
-            title: "Tutorials",
-            url: "#",
-          },
-          {
-            title: "Changelog",
-            url: "#",
-          },
-        ],
+        icon: LucideVideo,
       },
       {
-        title: "Settings",
-        url: "#",
-        icon: Settings2,
-        items: [
-          {
-            title: "General",
-            url: "#",
-          },
-          {
-            title: "Team",
-            url: "#",
-          },
-          {
-            title: "Billing",
-            url: "#",
-          },
-          {
-            title: "Limits",
-            url: "#",
-          },
-        ],
+        title: "History",
+        url: "/history",
+        icon: History,
       },
     ],
     navSecondary: [
@@ -151,7 +95,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     you: [
       {
         name: "My Videos",
-        url: "/"+userDetails?.username+"/videos",
+        url: "/" + userDetails?.username + "/videos",
         icon: Video,
       },
       {
@@ -166,6 +110,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       },
     ],
   };
+
+  useEffect(() => {
+    if (authStatus) {
+      const fetchSubscriptions = async () => {
+        try {
+          const response = await axiosInstance.get(`/subscriptions/channels/${userDetails._id}`);
+          setSubscriptions(response.data.data);
+          console.log("subscriptions: ", response.data.data);
+        } catch (error: any) {
+          const errorData = geterrorMessage(error.response.data);
+          toast({
+            title: errorData,
+            variant: "destructive",
+          });
+        }
+      }
+      fetchSubscriptions();
+    }
+  }, [authStatus])
   const handleLogout = async () => {
     // Handle logout
     try {
@@ -185,18 +148,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar variant="inset" {...props} className="text-blue-600">
-      <SidebarHeader> 
+      <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <Link to="/">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <img src="/videotube_logo.png" alt="VideoTube" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">VideoTube</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

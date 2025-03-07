@@ -17,6 +17,8 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "./ui/collapsible";
+import { Link } from "react-router";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export function NavMain({
   items,
@@ -27,6 +29,7 @@ export function NavMain({
     icon: LucideIcon;
     isActive?: boolean;
     items?: {
+      icon: string | undefined;
       title: string;
       url: string;
     }[];
@@ -40,10 +43,10 @@ export function NavMain({
           <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={item.title}>
-                <a href={item.url}>
+                <Link to={item.url}>
                   <item.icon />
                   <span>{item.title}</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
               {item.items?.length ? (
                 <>
@@ -56,11 +59,15 @@ export function NavMain({
                   <CollapsibleContent>
                     <SidebarMenuSub>
                       {item.items?.map((subItem) => (
-                        <SidebarMenuSubItem key={subItem.title}>
+                        <SidebarMenuSubItem key={subItem.title} className="flex items-center">
+                          <Avatar className="h-[32px] w-[32px] aspect-square">
+                            <AvatarImage src={subItem.icon} alt={subItem.title} className="rounded-full" />
+                            <AvatarFallback>{subItem.title as string}</AvatarFallback>
+                          </Avatar>
                           <SidebarMenuSubButton asChild>
-                            <a href={subItem.url}>
-                              <span>{subItem.title}</span>
-                            </a>
+                            <Link to={subItem.url}>
+                              <span className="text-blue-600 text-md">{subItem.title}</span>
+                            </Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       ))}

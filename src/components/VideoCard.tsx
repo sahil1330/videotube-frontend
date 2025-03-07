@@ -4,7 +4,8 @@ import { Avatar, AvatarImage } from "./ui/avatar"
 import { Link } from "react-router"
 import { Suspense } from "react"
 import { Skeleton } from "./ui/skeleton"
-import TransformedVideo from "./ImageTransformation.tsx/TransformedVideo"
+import { formatDistanceToNow } from "date-fns"
+// import TransformedVideo from "./ImageTransformation.tsx/TransformedVideo"
 
 function VideoCard(video: VideoSchema) {
 
@@ -14,8 +15,8 @@ function VideoCard(video: VideoSchema) {
                 <div className="flex flex-col">
                     <Suspense fallback={<Skeleton className="h-[125px] w-[250px] rounded-xl" />}>
                         <div className="aspect-video rounded-xl bg-muted/50">
-                            <TransformedVideo videoPublicId={video.videoFilePublicId} poster={video?.thumbnail} controls={false} width={"100%"} height={"100%"} />
-                            {/* <video src={video.videoFile} onMouseEnter={(e) => e.currentTarget.play()} onMouseLeave={(e) => e.currentTarget.pause()} poster={video.thumbnail} className="rounded-lg"></video> */}
+                            {/* <TransformedVideo videoPublicId={video.videoFilePublicId} poster={video?.thumbnail} controls={false} width={"100%"} height={"100%"} /> */}
+                            <video src={video.videoFile} onMouseEnter={(e) => e.currentTarget.play()} onMouseLeave={(e) => e.currentTarget.pause()} poster={video.thumbnail} className="rounded-lg"></video>
                         </div>
                     </Suspense>
                     <div className="video-details flex gap-4">
@@ -35,7 +36,7 @@ function VideoCard(video: VideoSchema) {
                                 <h3 className="text-lg font-bold">{video.title}</h3>
                                 <div className="flex justify-between gap-4">
                                     <p className="text-md">{video.views} views</p>
-                                    <p className="text-md mx-2">{video.createdAt}</p>
+                                    <p className="text-md mx-2">{formatDistanceToNow(new Date(video.createdAt), {addSuffix: true})}</p>
                                 </div>
                             </Suspense>
                         </div>

@@ -15,6 +15,7 @@ import Account from "./pages/Account.tsx";
 import WatchVideo from "./pages/WatchVideo.tsx";
 import UserVideos from "./pages/UserVideos.tsx";
 import EditProfile from "./pages/EditProfile.tsx";
+import History from "./pages/History.tsx";
 
 const router = createBrowserRouter([
   {
@@ -71,6 +72,14 @@ const router = createBrowserRouter([
             <EditProfile />
           </AuthLayout>
         ),
+      },
+      {
+        path: "/history",
+        element: (
+          <AuthLayout authentication={true} url="/history" >
+            <History />
+          </AuthLayout >
+        )
       },
       {
         path: "/watch/:slug",
