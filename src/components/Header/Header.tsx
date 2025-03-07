@@ -6,7 +6,7 @@ import { ModeToggle } from "../mode-toggle";
 
 const Header = () => {
   return (
-    <div className="flex justify-between mx-4">
+    <div className="flex justify-between items-center mx-4">
       <h1 className="text-2xl md:text-3xl font-bold text-blue-600">
         <NavLink to={"/"} className="flex items-center ">
           <Suspense fallback={<Skeleton className="w-16 h-16" />}>
