@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router";
 import { formatDistanceToNow } from "date-fns";
+import { useTheme } from "@/components/theme-provider";
 function WatchVideo() {
   const { slug } = useParams();
   const [video, setVideo] = useState<VideoSchema>();
@@ -30,6 +31,7 @@ function WatchVideo() {
   const [isInfoContainerOpen, setIsInfoContainerOpen] =
     useState<boolean>(false);
   const { toast } = useToast();
+  const CurrentTheme = useTheme();
   // const infoRef = useRef<HTMLDivElement>(null);
   const userDetails = useSelector((state: authState) => state.auth.user);
   useEffect(() => {
@@ -253,17 +255,33 @@ function WatchVideo() {
                 </div>
                 <div className="right-flex w-1/2 flex justify-end gap-4">
                   <div className="like-dislike">
-                    <div className="flex items-center border border-black rounded-lg">
+                    <div className="flex items-center border border-white light:border-black rounded-lg">
                       <Button variant="ghost" onClick={handleLike}>
-                        {isLiked ? <ThumbsUp fill="" /> : <ThumbsUp />}
+                        {isLiked ? (
+                          CurrentTheme.theme === "dark" ? (
+                            <ThumbsUp fill="white" />
+                          ) : (
+                            <ThumbsUp fill="black" />
+                          )
+                        ) : (
+                          <ThumbsUp />
+                        )}
                         {likes}{" "}
                       </Button>
                       <Separator
                         orientation="vertical"
-                        className="border border-black h-8"
+                        className="border border-white light:border-black h-8"
                       />
                       <Button variant="ghost" onClick={handleDislike}>
-                        {isDisliked ? <ThumbsDown fill="" /> : <ThumbsDown />}
+                        {isDisliked ? (
+                          CurrentTheme.theme === "dark" ? (
+                            <ThumbsDown fill="white" />
+                          ) : (
+                            <ThumbsDown fill="black" />
+                          )
+                        ) : (
+                          <ThumbsDown />
+                        )}
                       </Button>
                     </div>
                   </div>

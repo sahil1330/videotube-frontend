@@ -2,6 +2,7 @@ import { NavLink } from "react-router";
 import { Input } from "../ui/input";
 import { Skeleton } from "@/components/ui/skeleton"
 import { Suspense } from "react";
+import { ModeToggle } from "../mode-toggle";
 
 const Header = () => {
   return (
@@ -15,6 +16,7 @@ const Header = () => {
         </NavLink>
       </h1>
       <Input className="md:w-2/4 w-2/4 border-2" placeholder="Search"></Input>
+      <ModeToggle />
     </div>
   );
 };

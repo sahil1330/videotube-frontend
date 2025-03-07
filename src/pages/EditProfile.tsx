@@ -37,7 +37,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 // Create a schema for profile editing
 const profileEditSchema = z.object({
   fullName: z.string().min(1, { message: "Full name is required" }),
-  username: z.string()
+  username: z
+    .string()
     .min(3, { message: "Username must be at least 3 characters" })
     .max(20, { message: "Username must not exceed 20 characters" })
     .regex(/^[a-zA-Z0-9_]*$/, {
@@ -46,7 +47,6 @@ const profileEditSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   avatar: z.any().optional(),
   coverImage: z.any().optional(),
-  bio: z.string().max(500, { message: "Bio should not exceed 500 characters" }).optional(),
 });
 
 function EditProfile() {
@@ -65,7 +65,6 @@ function EditProfile() {
       fullName: "",
       username: "",
       email: "",
-      bio: "",
     },
   });
 
@@ -76,7 +75,6 @@ function EditProfile() {
         fullName: userDetails.fullName || "",
         username: userDetails.username || "",
         email: userDetails.email || "",
-        bio: userDetails.bio || "",
       });
       setAvatarPreview(userDetails.avatar);
       setCoverPreview(userDetails.coverImage);
@@ -90,28 +88,27 @@ function EditProfile() {
       formData.append("fullName", data.fullName);
       formData.append("username", data.username);
       formData.append("email", data.email);
-      
-      if (data.bio) {
-        formData.append("bio", data.bio);
-      }
-      
+
       if (data.avatar && data.avatar instanceof File) {
         formData.append("avatar", data.avatar);
       }
-      
+
       if (data.coverImage && data.coverImage instanceof File) {
         formData.append("coverImage", data.coverImage);
       }
-      
-      const response = await axiosInstance.patch("/users/update-account", formData);
-      
+
+      const response = await axiosInstance.patch(
+        "/users/update-account",
+        formData
+      );
+
       // Update Redux store with the updated user data
       dispatch(login(response.data.data));
-      
+
       toast({
         title: "Profile updated successfully",
       });
-      
+
       // Navigate back to the account page
       navigate(`/${data.username}`);
     } catch (error) {
@@ -160,7 +157,7 @@ function EditProfile() {
             Update your profile information and manage your account
           </CardDescription>
         </CardHeader>
-        
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CardContent className="space-y-6">
@@ -168,19 +165,26 @@ function EditProfile() {
               <div>
                 <FormLabel className="text-base">Cover Image</FormLabel>
                 <div className="mt-2 relative group">
-                  <div 
+                  <div
                     className="h-48 w-full rounded-lg bg-slate-200 overflow-hidden flex items-center justify-center"
                     style={{
-                      backgroundImage: coverPreview ? `url(${coverPreview})` : undefined,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
+                      backgroundImage: coverPreview
+                        ? `url(${coverPreview})`
+                        : undefined,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
                     }}
                   >
                     {!coverPreview && (
-                      <span className="text-slate-400">No cover image selected</span>
+                      <span className="text-slate-400">
+                        No cover image selected
+                      </span>
                     )}
                     <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                      <label htmlFor="cover-image-upload" className="cursor-pointer bg-white/80 text-black px-4 py-2 rounded-md flex items-center gap-2 hover:bg-white">
+                      <label
+                        htmlFor="cover-image-upload"
+                        className="cursor-pointer bg-white/80 text-black px-4 py-2 rounded-md flex items-center gap-2 hover:bg-white"
+                      >
                         <Upload size={16} />
                         Change Cover
                       </label>
@@ -200,9 +204,14 @@ function EditProfile() {
               <div className="flex items-center gap-6">
                 <div className="relative group">
                   <Avatar className="w-24 h-24 border-4 border-white shadow-md">
-                    <AvatarImage src={avatarPreview || ""} alt="Profile picture" />
+                    <AvatarImage
+                      src={avatarPreview || ""}
+                      alt="Profile picture"
+                    />
                     <AvatarFallback className="text-2xl">
-                      {userDetails?.fullName ? userDetails.fullName[0].toUpperCase() : "U"}
+                      {userDetails?.fullName
+                        ? userDetails.fullName[0].toUpperCase()
+                        : "U"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="absolute inset-0 rounded-full bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
@@ -237,7 +246,7 @@ function EditProfile() {
                     <FormItem>
                       <FormLabel>Full Name</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Your full name" />
+                        <Input {...field} placeholder="Your full name" className="border-blue-500" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -268,29 +277,12 @@ function EditProfile() {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Your email address" type="email" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="bio"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>Bio</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          {...field} 
-                          placeholder="Tell us about yourself"
-                          className="resize-none min-h-[100px]"
+                        <Input
+                          {...field}
+                          placeholder="Your email address"
+                          type="email"
                         />
                       </FormControl>
-                      <FormDescription>
-                        Max 500 characters
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -299,14 +291,14 @@ function EditProfile() {
             </CardContent>
 
             <CardFooter className="flex justify-between">
-              <Button 
-                type="button" 
+              <Button
+                type="button"
                 variant="outline"
                 onClick={() => navigate(`/${userDetails?.username}`)}
               >
                 Cancel
               </Button>
-              
+
               {isSubmitting ? (
                 <Button disabled>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

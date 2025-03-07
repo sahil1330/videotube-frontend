@@ -17,6 +17,7 @@ import UserVideos from "./pages/UserVideos.tsx";
 import EditProfile from "./pages/EditProfile.tsx";
 import History from "./pages/History.tsx";
 import LikedVideos from "./pages/LikedVideos.tsx";
+import { ThemeProvider } from "./components/theme-provider.tsx";
 
 const router = createBrowserRouter([
   {
@@ -61,10 +62,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/:slug",
-        element:
+        element: (
           <AuthLayout authentication={true} url="/">
             <Account />
-          </AuthLayout>,
+          </AuthLayout>
+        ),
       },
       {
         path: "/edit-profile",
@@ -77,32 +79,34 @@ const router = createBrowserRouter([
       {
         path: "/history",
         element: (
-          <AuthLayout authentication={true} url="/history" >
+          <AuthLayout authentication={true} url="/history">
             <History />
-          </AuthLayout >
-        )
+          </AuthLayout>
+        ),
       },
       {
-        path: '/liked-videos',
+        path: "/liked-videos",
         element: (
           <AuthLayout authentication={true} url="/liked-videos">
             <LikedVideos />
           </AuthLayout>
-        )
+        ),
       },
       {
         path: "/watch/:slug",
-        element: <WatchVideo />
-      }
+        element: <WatchVideo />,
+      },
     ],
   },
 ]);
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <RouterProvider router={router} />
-      </PersistGate>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <PersistGate loading={null} persistor={persistor}>
+          <RouterProvider router={router} />
+        </PersistGate>
+      </ThemeProvider>
     </Provider>
   </StrictMode>
 );
