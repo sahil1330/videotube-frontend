@@ -19,11 +19,6 @@ function App() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        // const authToken = document.cookie
-        //   .split('; ')
-        //   .find((row) => row.startsWith('next-auth.session-token'))
-        //   ?.split('=')[1];
-        // console.log(authToken);
         const response = await axiosInstance.get("/users/current-user");
         const user = response.data.data;
         console.log(user);

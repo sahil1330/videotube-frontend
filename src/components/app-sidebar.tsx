@@ -6,12 +6,11 @@ import {
   History,
   Home,
   LifeBuoy,
-  LucideVideo,
-  Map,
-  PieChart,
+  ListVideo,
   Send,
-  SubscriptIcon,
+  ThumbsUp,
   Video,
+  Videotape,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { NavMain } from "./nav-main";
@@ -38,9 +37,9 @@ import { Link } from "react-router";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const dispatch = useDispatch();
-  const authStatus = useSelector((state: authState) => state.auth.status)
+  const authStatus = useSelector((state: authState) => state.auth.status);
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
-  const { toast } = useToast()
+  const { toast } = useToast();
   // console.log("auth status in sidebar: ", authStatus);
   // console.log("user details in sidebar: ", useSelector((state: any) => state.auth.user));
   const userDetails = useSelector((state: any) => state.auth.user);
@@ -61,18 +60,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {
         title: "Subscriptions",
         url: "#",
-        icon: SubscriptIcon,
+        icon: Videotape ,
         items: subscriptions.map((sub) => ({
           icon: sub.channel.avatar,
           id: sub.channel._id,
           title: sub.channel.fullName,
-          url: `/${sub.channel.username}`
-        }))
-      },
-      {
-        title: "Playlists",
-        url: "#",
-        icon: LucideVideo,
+          url: `/${sub.channel.username}`,
+        })),
       },
       {
         title: "History",
@@ -99,14 +93,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: Video,
       },
       {
-        name: "Sales & Marketing",
-        url: "#",
-        icon: PieChart,
+        name: "Liked Videos",
+        url: "/liked-videos",
+        icon: ThumbsUp,
       },
       {
-        name: "Travel",
-        url: "#",
-        icon: Map,
+        name: "Playlists",
+        url: "/playlists",
+        icon: ListVideo ,
       },
     ],
   };
@@ -115,7 +109,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     if (authStatus) {
       const fetchSubscriptions = async () => {
         try {
-          const response = await axiosInstance.get(`/subscriptions/channels/${userDetails._id}`);
+          const response = await axiosInstance.get(
+            `/subscriptions/channels/${userDetails._id}`
+          );
           setSubscriptions(response.data.data);
           console.log("subscriptions: ", response.data.data);
         } catch (error: any) {
@@ -125,16 +121,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             variant: "destructive",
           });
         }
-      }
+      };
       fetchSubscriptions();
     }
-  }, [authStatus])
+  }, [authStatus]);
   const handleLogout = async () => {
     // Handle logout
     try {
       const response = await axiosInstance.post("/users/logout");
       if (response.data.success) {
-        dispatch(logout())
+        dispatch(logout());
       }
     } catch (error: any) {
       console.error(error);
@@ -144,7 +140,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         variant: "destructive",
       });
     }
-  }
+  };
 
   return (
     <Sidebar variant="inset" {...props} className="text-blue-600">
@@ -170,7 +166,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        {authStatus ? (<NavUser user={data.user} handleLogout={handleLogout} />) : (<Link to={"/login"}><Button>Login</Button></Link>)}
+        {authStatus ? (
+          <NavUser user={data.user} handleLogout={handleLogout} />
+        ) : (
+          <Link to={"/login"}>
+            <Button>Login</Button>
+          </Link>
+        )}
       </SidebarFooter>
     </Sidebar>
   );

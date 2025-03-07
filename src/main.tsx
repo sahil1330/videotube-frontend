@@ -16,6 +16,7 @@ import WatchVideo from "./pages/WatchVideo.tsx";
 import UserVideos from "./pages/UserVideos.tsx";
 import EditProfile from "./pages/EditProfile.tsx";
 import History from "./pages/History.tsx";
+import LikedVideos from "./pages/LikedVideos.tsx";
 
 const router = createBrowserRouter([
   {
@@ -79,6 +80,14 @@ const router = createBrowserRouter([
           <AuthLayout authentication={true} url="/history" >
             <History />
           </AuthLayout >
+        )
+      },
+      {
+        path: '/liked-videos',
+        element: (
+          <AuthLayout authentication={true} url="/liked-videos">
+            <LikedVideos />
+          </AuthLayout>
         )
       },
       {
