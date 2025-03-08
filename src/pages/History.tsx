@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import VideoSchema from "@/schemas/VideoSchema";
 import { authState } from "@/types";
 import React, { useEffect, useState, useRef, useCallback } from "react";
@@ -35,7 +36,7 @@ function History() {
     const fetchWatchedVideos = useCallback(async () => {
         if (!userDetails?.watchHistory?.length) return;
 
-        setLoading(true);
+        setLoading(true);       
         try {
             // Get the slice of video IDs for the current page
             const start = (page - 1) * pageSize;
@@ -79,13 +80,13 @@ function History() {
     }, [fetchWatchedVideos]);
 
     return (
-        <div className="p-6 bg-gray-100 min-h-screen">
-            <h1 className="text-3xl text-blue-500 font-bold mb-6">Watch History</h1>
+        <div className="p-4 min-h-screen">
+            <h1 className="text-3xl text-primary font-bold mb-6">Watch History</h1>
             <div className="">
                 {videos.map((video, index) => (
                     <Link to={`/watch/${video._id}`} key={video._id}>
                         <div
-                            className="bg-white rounded-lg shadow-md overflow-hidden flex mb-4"
+                            className="bg-gray dark:bg-slate-900 rounded-lg shadow-md overflow-hidden flex mb-4"
                             ref={
                                 index === videos.length - 1 ? lastVideoElementRef : undefined
                             }

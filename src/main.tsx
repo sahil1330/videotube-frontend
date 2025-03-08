@@ -18,6 +18,8 @@ import EditProfile from "./pages/EditProfile.tsx";
 import History from "./pages/History.tsx";
 import LikedVideos from "./pages/LikedVideos.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
+import Playlists from "./pages/Playlists.tsx";
+import PlayListVideos from "./pages/PlayListVideos.tsx";
 
 const router = createBrowserRouter([
   {
@@ -89,6 +91,22 @@ const router = createBrowserRouter([
         element: (
           <AuthLayout authentication={true} url="/liked-videos">
             <LikedVideos />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/playlists",
+        element: (
+          <AuthLayout authentication={true} url="/playlist">
+            <Playlists />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/playlists/:slug",
+        element: (
+          <AuthLayout authentication={true} url="/playlists">
+            <PlayListVideos />
           </AuthLayout>
         ),
       },

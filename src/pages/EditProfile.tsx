@@ -30,7 +30,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -112,6 +111,7 @@ function EditProfile() {
       // Navigate back to the account page
       navigate(`/${data.username}`);
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const errorMessage = geterrorMessage((error as any)?.response?.data);
       toast({
         title: errorMessage,
@@ -148,7 +148,7 @@ function EditProfile() {
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-4xl">
-      <h1 className="text-3xl font-bold text-blue-500 mb-6">Edit Profile</h1>
+      <h1 className="text-3xl font-bold text-primary mb-6">Edit Profile</h1>
       
       <Card className="shadow-lg">
         <CardHeader>

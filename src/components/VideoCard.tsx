@@ -19,9 +19,9 @@ function VideoCard(video: VideoSchema) {
                             <video src={video.videoFile} onMouseEnter={(e) => e.currentTarget.play()} onMouseLeave={(e) => e.currentTarget.pause()} poster={video.thumbnail} className="rounded-lg"></video>
                         </div>
                     </Suspense>
-                    <div className="video-details flex gap-4">
+                    <div className="video-details flex gap-4 p-1">
                         <Suspense fallback={<Skeleton className="h-12 w-12 rounded-full" />}>
-                            <Avatar className="h-[54px] w-[54px] aspect-square rounded-full py-2">
+                            <Avatar className="h-[54px] w-[54px] aspect-square rounded-full">
                                 <AvatarImage src={video.owner?.avatar} />
                                 {/* <AvatarFallback className="rounded-lg">CN</AvatarFallback> */}
                             </Avatar>

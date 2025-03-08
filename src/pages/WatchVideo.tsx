@@ -9,7 +9,7 @@ import VideoSchema from "@/schemas/VideoSchema";
 import { authState } from "@/types";
 import axiosInstance from "@/utils/axiosInstance";
 import geterrorMessage from "@/utils/errorMessage";
-import { Download, Share, ThumbsDown, ThumbsUp } from "lucide-react";
+import { Download, Loader2, Share, ThumbsDown, ThumbsUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router";
@@ -25,16 +25,22 @@ function WatchVideo() {
     value: "Subscribe",
     isSubscribed: false,
   });
+  const [isLoading, setIsLoading] = useState(true);
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [likes, setLikes] = useState<number>(0);
   const [isDisliked, setIsDisliked] = useState<boolean>(false);
   const [isInfoContainerOpen, setIsInfoContainerOpen] =
     useState<boolean>(false);
+  const [playlistId, setPlaylistId] = useState<string>("");
+  const [playLists, setPlayLists] = useState<Array<any>>([]);
+  const [isPlayListOpen, setIsPlayListOpen] = useState<boolean>(false);
   const { toast } = useToast();
   const CurrentTheme = useTheme();
   // const infoRef = useRef<HTMLDivElement>(null);
   const userDetails = useSelector((state: authState) => state.auth.user);
   useEffect(() => {
+    setIsLoading(true);
+    if (!slug) return;
     const fetchVideo = async () => {
       try {
         const response = await axiosInstance.get(`/videos/${slug}`);
@@ -77,9 +83,11 @@ function WatchVideo() {
     };
 
     fetchVideo();
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
+    setIsLoading(true);
     const fetchOtherVideos = async () => {
       if (!video?.owner?._id) return;
 
@@ -98,6 +106,7 @@ function WatchVideo() {
       }
     };
     fetchOtherVideos();
+    setIsLoading(false);
   }, [video]);
 
   const toggleSubscription = async () => {
@@ -176,7 +185,7 @@ function WatchVideo() {
   };
   const handleDownload = async () => {
     try {
-      console.log("Inn download");
+      console.log("In download");
       const response = await fetch(video?.videoFile as string);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -199,6 +208,56 @@ function WatchVideo() {
       });
     }
   };
+  const addVideoToPlaylist = async (videoId: string) => {
+    setIsLoading(true);
+    try {
+      const response = await axiosInstance.post(
+        `/playlists/add-video/${playlistId}`,
+        { videoId }
+      );
+      toast({
+        title: response.data.message,
+      });
+    } catch (error) {
+      const errorMessage = geterrorMessage((error as any)?.response?.data);
+      toast({
+        title: errorMessage,
+        variant: "destructive",
+      });
+    }
+  };
+  const getAvailablePlayLists = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axiosInstance.get(
+        `/playlists/get-user-playlists/${userDetails?._id}`
+      );
+      console.log(response.data.data);
+      if (response.data.data.length > 0) {
+        setPlayLists(response.data.data);
+        setIsPlayListOpen(true);
+      } else {
+        toast({
+          title: "No Playlists available",
+          variant: "default",
+        });
+      }
+    } catch (error) {
+      const errorMessage = geterrorMessage((error as any)?.response?.data);
+      toast({
+        title: errorMessage,
+        variant: "destructive",
+      });
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-1 items-center justify-center">
+        <Loader2 className="animate-spin w-80" />
+      </div>
+    );
+  }
   return (
     <>
       <div className="wrapper w-11/12  mx-auto flex md:flex-row flex-col gap-4 py-4">
@@ -294,6 +353,17 @@ function WatchVideo() {
                     <Button variant="secondary" onClick={handleDownload}>
                       <Download />{" "}
                       <span className="hidden md:inline">Download</span>
+                    </Button>
+                  </div>
+                  <div className="addToPlayListButton">
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        setPlaylistId("");
+                        getAvailablePlayLists();
+                      }}
+                    >
+                      <span className="hidden md:inline">Add to Playlist</span>
                     </Button>
                   </div>
                 </div>

@@ -105,16 +105,24 @@ const Login = () => {
               />
 
               {isSubmitting ? (
-                <Button type="submit" disabled>
+                <Button type="submit" className="dark:text-white" disabled>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Submit
                 </Button>
               ) : (
-                <Button type="submit">Submit</Button>
+                <Button type="submit" className="dark:text-white">
+                  Sign In
+                </Button>
               )}
             </form>
           </Form>
-          <p className="text-center m-4 text-black">Not registered? <Link to={"/Signup"} className="text-blue-600">Signup</Link> here</p>
+          <p className="text-center m-4 text-black">
+            Not registered?{" "}
+            <Link to={"/Signup"} className="text-blue-600">
+              Signup
+            </Link>{" "}
+            here
+          </p>
         </div>
       </div>
     </>

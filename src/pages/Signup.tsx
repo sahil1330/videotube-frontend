@@ -25,7 +25,7 @@ const Signup = () => {
   // const [isCheckingUsername, setIsCheckingUsername] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { toast } = useToast()
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -179,12 +179,14 @@ const Signup = () => {
               />
 
               {isSubmitting ? (
-                <Button type="submit" disabled>
+                <Button type="submit" className="dark:text-white" disabled>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Submit
                 </Button>
               ) : (
-                <Button type="submit">Submit</Button>
+                <Button type="submit" className="dark:text-white">
+                  Submit
+                </Button>
               )}
             </form>
           </Form>

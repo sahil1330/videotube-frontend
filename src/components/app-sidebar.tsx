@@ -60,7 +60,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {
         title: "Subscriptions",
         url: "#",
-        icon: Videotape ,
+        icon: Videotape,
         items: subscriptions.map((sub) => ({
           icon: sub.channel.avatar,
           id: sub.channel._id,
@@ -100,7 +100,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {
         name: "Playlists",
         url: "/playlists",
-        icon: ListVideo ,
+        icon: ListVideo,
       },
     ],
   };
@@ -170,7 +170,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <NavUser user={data.user} handleLogout={handleLogout} />
         ) : (
           <Link to={"/login"}>
-            <Button>Login</Button>
+            <Button variant={"default"} className="dark:text-white">
+              Login
+            </Button>
           </Link>
         )}
       </SidebarFooter>
