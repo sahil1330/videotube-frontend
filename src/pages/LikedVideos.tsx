@@ -1,11 +1,11 @@
-import { useToast } from "@/hooks/use-toast"
-import VideoSchema from "@/schemas/VideoSchema"
-import axiosInstance from "@/utils/axiosInstance"
-import geterrorMessage from "@/utils/errorMessage"
-import { formatDistanceToNow } from "date-fns"
-import { Loader2 } from "lucide-react"
-import { useEffect, useState } from "react"
-import { Link } from "react-router"
+import { useToast } from "@/hooks/use-toast";
+import { VideoSchema } from "@/schemas";
+import axiosInstance from "@/utils/axiosInstance";
+import geterrorMessage from "@/utils/errorMessage";
+import { formatDistanceToNow } from "date-fns";
+import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router";
 
 function LikedVideos() {
   const [isLoading, setIsLoading] = useState(true);

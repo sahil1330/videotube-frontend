@@ -1,6 +1,6 @@
-import UserSchema from "./UserSchema";
+import { UserSchema } from "./UserSchema";
 
-interface VideoSchema {
+export interface VideoSchema {
   _id: string;
   videoFile: string;
   videoFilePublicId: string;
@@ -14,5 +14,3 @@ interface VideoSchema {
   createdAt: string;
   updatedAt: string;
 }
-
-export default VideoSchema;

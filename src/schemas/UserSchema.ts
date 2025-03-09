@@ -1,4 +1,4 @@
-interface UserSchema {
+export interface UserSchema {
     _id: string;
     username: string;
     email: string;
@@ -10,5 +10,3 @@ interface UserSchema {
     createdAt: string;
     updatedAt: string;
 }
-
-export default UserSchema;

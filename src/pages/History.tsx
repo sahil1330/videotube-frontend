@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import VideoSchema from "@/schemas/VideoSchema";
+import { VideoSchema } from "@/schemas";
 import { authState } from "@/types";
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useSelector } from "react-redux";
 import axiosInstance from "@/utils/axiosInstance";
 import { Link } from "react-router";

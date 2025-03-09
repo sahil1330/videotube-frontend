@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useToast } from "@/hooks/use-toast";
-import VideoSchema from "@/schemas/VideoSchema";
+import { VideoSchema } from "@/schemas";
 import { authState } from "@/types";
 import axiosInstance from "@/utils/axiosInstance";
 import geterrorMessage from "@/utils/errorMessage";

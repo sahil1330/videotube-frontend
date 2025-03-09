@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import VideoSchema from "@/schemas/VideoSchema";
+import { VideoSchema } from "@/schemas";
 import { authState } from "@/types";
 import axiosInstance from "@/utils/axiosInstance";
 import geterrorMessage from "@/utils/errorMessage";
@@ -15,6 +15,8 @@ import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router";
 import { formatDistanceToNow } from "date-fns";
 import { useTheme } from "@/components/theme-provider";
+import AddVideoToPlayList from "@/components/AddVideoToPlayList/AddVideoToPlayList";
+import { UserSchema } from "@/schemas";
 function WatchVideo() {
   const { slug } = useParams();
   const [video, setVideo] = useState<VideoSchema>();
@@ -31,13 +33,11 @@ function WatchVideo() {
   const [isDisliked, setIsDisliked] = useState<boolean>(false);
   const [isInfoContainerOpen, setIsInfoContainerOpen] =
     useState<boolean>(false);
-  const [playlistId, setPlaylistId] = useState<string>("");
-  const [playLists, setPlayLists] = useState<Array<any>>([]);
-  const [isPlayListOpen, setIsPlayListOpen] = useState<boolean>(false);
   const { toast } = useToast();
   const CurrentTheme = useTheme();
   // const infoRef = useRef<HTMLDivElement>(null);
   const userDetails = useSelector((state: authState) => state.auth.user);
+
   useEffect(() => {
     setIsLoading(true);
     if (!slug) return;
@@ -208,48 +208,6 @@ function WatchVideo() {
       });
     }
   };
-  const addVideoToPlaylist = async (videoId: string) => {
-    setIsLoading(true);
-    try {
-      const response = await axiosInstance.post(
-        `/playlists/add-video/${playlistId}`,
-        { videoId }
-      );
-      toast({
-        title: response.data.message,
-      });
-    } catch (error) {
-      const errorMessage = geterrorMessage((error as any)?.response?.data);
-      toast({
-        title: errorMessage,
-        variant: "destructive",
-      });
-    }
-  };
-  const getAvailablePlayLists = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axiosInstance.get(
-        `/playlists/get-user-playlists/${userDetails?._id}`
-      );
-      console.log(response.data.data);
-      if (response.data.data.length > 0) {
-        setPlayLists(response.data.data);
-        setIsPlayListOpen(true);
-      } else {
-        toast({
-          title: "No Playlists available",
-          variant: "default",
-        });
-      }
-    } catch (error) {
-      const errorMessage = geterrorMessage((error as any)?.response?.data);
-      toast({
-        title: errorMessage,
-        variant: "destructive",
-      });
-    }
-  };
 
   if (isLoading) {
     return (
@@ -355,17 +313,10 @@ function WatchVideo() {
                       <span className="hidden md:inline">Download</span>
                     </Button>
                   </div>
-                  <div className="addToPlayListButton">
-                    <Button
-                      variant="secondary"
-                      onClick={() => {
-                        setPlaylistId("");
-                        getAvailablePlayLists();
-                      }}
-                    >
-                      <span className="hidden md:inline">Add to Playlist</span>
-                    </Button>
-                  </div>
+                  <AddVideoToPlayList
+                    userDetails={userDetails as UserSchema}
+                    video={video}
+                  />
                 </div>
               </div>
               <div className="info-container bg-slate-500/10 p-4 h-auto contain-content rounded-lg mt-4">
