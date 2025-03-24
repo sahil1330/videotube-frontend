@@ -40,6 +40,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import VideosListSkeleton from "@/components/Skeletons/VideosListSkeleton";
 
 interface Playlist {
   _id: string;
@@ -156,7 +157,8 @@ function Playlists() {
 
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
-          <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
+          {/* <Loader2 className="w-10 h-10 animate-spin text-blue-500" /> */}
+          <VideosListSkeleton />
         </div>
       ) : (
         <>
