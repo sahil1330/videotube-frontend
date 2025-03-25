@@ -8,7 +8,11 @@ import axiosInstance from "./utils/axiosInstance";
 import { login, logout } from "./store/authSlice";
 // import { useToast } from "./hooks/use-toast";
 import { Toaster } from "./components/ui/toaster";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "./components/ui/sidebar";
 import { AppSidebar } from "./components/app-sidebar";
 
 function App() {
@@ -52,8 +56,10 @@ function App() {
         <AppSidebar />
         <SidebarInset>
           <main>
-            <SidebarTrigger />
-            <Header />
+            <div className="flex items-center px-4 md:bg-inherit bg-primary-foreground sticky top-0 z-10">
+              <SidebarTrigger />
+              <Header />
+            </div>
             <Outlet />
           </main>
           <Toaster />

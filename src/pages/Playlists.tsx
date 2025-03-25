@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useToast } from "@/hooks/use-toast";
-import { VideoSchema } from "@/schemas";
+import { UserSchema, VideoSchema } from "@/schemas";
 import { authState } from "@/types";
 import axiosInstance from "@/utils/axiosInstance";
 import geterrorMessage from "@/utils/errorMessage";
@@ -41,13 +41,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import VideosListSkeleton from "@/components/Skeletons/VideosListSkeleton";
+import { formatDistanceToNow } from "date-fns";
 
 interface Playlist {
   _id: string;
   name: string;
   description: string;
   videos: VideoSchema[];
-  owner: string;
+  owner: UserSchema;
   createdAt: string;
   updatedAt: string;
 }
@@ -61,7 +62,10 @@ function Playlists() {
   const { toast } = useToast();
   const userDetails = useSelector((state: authState) => state.auth.user);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
+  const [isUpdatingPlayList, setIsUpdatingPlayList] = useState({
+    status: false,
+    playlistId: "",
+  });
   useEffect(() => {
     fetchPlaylists();
   }, []);
@@ -151,6 +155,46 @@ function Playlists() {
     }
   };
 
+  const handleUpdatePlaylist = async (playlistId: string) => {
+    setIsSubmitting(true);
+    if (playlistName === "") {
+      toast({
+        title: "Playlist name is required",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const response = await axiosInstance.patch(`/playlists/${playlistId}`, {
+        name: playlistName,
+        description: playlistDescription,
+      });
+
+      if (response.data.statusCode === 200) {
+        toast({
+          title: "Playlist updated successfully",
+          variant: "default",
+        });
+        fetchPlaylists(); // Refresh the playlists after update
+      }
+    } catch (error) {
+      const errorMessage = geterrorMessage((error as any).response?.data);
+      toast({
+        title: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdatingPlayList({
+        status: false,
+        playlistId: "",
+      });
+      setIsSubmitting(false);
+      setPlaylistName("");
+    }
+  };
+
   return (
     <div className="container mx-auto p-4 min-h-screen relative">
       <h1 className="text-3xl font-bold text-blue-500 mb-6">My Playlists</h1>
@@ -211,6 +255,18 @@ function Playlists() {
                             >
                               Delete Playlist
                             </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setIsUpdatingPlayList({
+                                  status: true,
+                                  playlistId: playlist._id,
+                                });
+                                setPlaylistName(playlist.name);
+                              }}
+                            >
+                              Update Playlist
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
@@ -244,7 +300,13 @@ function Playlists() {
                       </p>
                     </CardContent>
                     <CardFooter className="border-t pt-2 text-xs text-gray-500">
-                      Created{" "}
+                      Created
+                      {" " +
+                        formatDistanceToNow(new Date(playlist.createdAt), {
+                          addSuffix: true,
+                        }) +
+                        " by "}
+                      {playlist.owner?.fullName}
                     </CardFooter>
                   </Link>
                 </Card>
@@ -253,6 +315,73 @@ function Playlists() {
           )}
         </>
       )}
+
+      {/* Create Playlist Dialog */}
+      <Dialog
+        open={isUpdatingPlayList.status}
+        onOpenChange={(open) =>
+          setIsUpdatingPlayList((prev) => ({
+            status: open,
+            playlistId: open ? prev.playlistId : "",
+          }))
+        }
+      >
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Update Playlist {playlistName}</DialogTitle>
+            <DialogDescription>
+              Update the Playlist name or description
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="name">Playlist Name</Label>
+              <Input
+                id="name"
+                value={playlistName}
+                onChange={(e) => setPlaylistName(e.target.value)}
+                placeholder="Enter playlist name"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={playlistDescription}
+                onChange={(e) => setPlaylistDescription(e.target.value)}
+                placeholder="Describe your playlist"
+                className="resize-none h-24"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() =>
+                setIsUpdatingPlayList({ status: false, playlistId: "" })
+              }
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() =>
+                handleUpdatePlaylist(isUpdatingPlayList.playlistId)
+              }
+              disabled={isSubmitting}
+              className="bg-blue-500 hover:bg-blue-600 dark:text-white"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                "Update Playlist"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Create Playlist Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>

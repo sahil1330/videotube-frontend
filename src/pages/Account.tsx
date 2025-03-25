@@ -151,7 +151,7 @@ function Account() {
   }
   return isAccountFound ? (
     <div>
-      <div className="account-header w-full py-4 px-10 gap-10 text-primary">
+      <div className="account-header w-full py-4 md:px-10 px-6 gap-10 text-primary">
         <div className="account-coverImage w-full h-40 bg-blue-500 rounded-lg overflow-hidden">
           <img
             src={accountDetails?.coverImage}
@@ -176,7 +176,7 @@ function Account() {
               </Button>
             )}
             {isOwner && (
-              <div className="account-actions my-4">
+              <div className="account-actions my-4 flex gap-2">
                 <Button
                   variant="outline"
                   className="outline-blue-600 mx-2"

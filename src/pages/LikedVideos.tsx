@@ -1,3 +1,4 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { VideoSchema } from "@/schemas";
 import axiosInstance from "@/utils/axiosInstance";
@@ -41,7 +42,7 @@ function LikedVideos() {
           <Loader2 className="animate-spin w-80" />
         </div>
       ) : (
-        <div className="flex flex-1 flex-col gap-4 p-8 pt-0">
+        <div className="flex flex-1 flex-col sm:gap-4 gap-2 md:p-8 p-4 pt-0">
           {likeVideoDetails.length > 0 ? (
             likeVideoDetails.map((likeVideoDetail) => (
               <Link
@@ -50,22 +51,44 @@ function LikedVideos() {
                 key={likeVideoDetail?.video?._id}
               >
                 <div
-                  className="flex flex-1 flex-col gap-4 p-8 pt-0 w-full"
+                  className="flex flex-1 flex-col gap-4 md:p-8 pt-0 w-full"
                   key={likeVideoDetail?.video?._id}
                 >
                   <div className="flex">
                     <video
                       src={likeVideoDetail?.video?.videoFile}
-                      className="aspect-video w-96 rounded-md"
+                      className="aspect-video md:w-96 w-1/2 rounded-md"
                       muted
                       autoPlay={false}
                       onMouseEnter={(e) => e.currentTarget.play()}
                       onMouseLeave={(e) => e.currentTarget.pause()}
                     ></video>
-                    <div className="videoDetails p-4 flex flex-col gap-4 text-blue-500">
-                      <h1 className="text-2xl font-bold">
-                        {likeVideoDetail?.video?.title}
+                    <div className="videoDetails sm:p-4 p-2 flex flex-col sm:gap-4 gap-2 text-blue-500">
+                      <h1 className="sm:text-2xl text-sm font-bold">
+                        {likeVideoDetail.video?.title &&
+                        likeVideoDetail?.video?.title.length > 36
+                          ? `${likeVideoDetail?.video?.title.slice(0, 36)} ...`
+                          : likeVideoDetail?.video?.title}
                       </h1>
+                      <Link
+                        to={`/${likeVideoDetail.video?.owner.username}`}
+                        className="flex items-center sm:gap-4 gap-2"
+                      >
+                        <Avatar className="sm:h-[44px] sm:w-[44px] w-[24px] h-[24px] aspect-square">
+                          <AvatarImage
+                            src={likeVideoDetail?.video?.owner?.avatar}
+                            alt={likeVideoDetail?.video?.owner?.username}
+                            className="rounded-full"
+                          />
+                          <AvatarFallback>
+                            {likeVideoDetail?.video?.owner?.username}
+                          </AvatarFallback>
+                        </Avatar>
+                        <p className="sm:text-lg text-sm text-muted-foreground">
+                          {likeVideoDetail?.video?.owner?.fullName ||
+                            "Unknown Creator"}
+                        </p>
+                      </Link>
                       <p className="text-sm text-muted-foreground">
                         {likeVideoDetail?.video?.createdAt
                           ? formatDistanceToNow(

@@ -35,17 +35,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // Create a schema for profile editing
 const profileEditSchema = z.object({
-  fullName: z.string().min(1, { message: "Full name is required" }),
+  fullName: z.string().min(1, { message: "Full name is required" }).optional(),
   username: z
     .string()
     .min(3, { message: "Username must be at least 3 characters" })
     .max(20, { message: "Username must not exceed 20 characters" })
     .regex(/^[a-zA-Z0-9_]*$/, {
       message: "Username can only contain letters, numbers and underscores",
-    }),
-  email: z.string().email({ message: "Invalid email address" }),
-  avatar: z.any().optional(),
-  coverImage: z.any().optional(),
+    })
+    .optional(),
+  email: z.string().email({ message: "Invalid email address" }).optional(),
 });
 
 function EditProfile() {
@@ -53,6 +52,8 @@ function EditProfile() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [isAvatarUploading, setIsAvatarUploading] = useState(false);
+  const [isCoverUploading, setIsCoverUploading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -83,23 +84,23 @@ function EditProfile() {
   const onSubmit = async (data: z.infer<typeof profileEditSchema>) => {
     setIsSubmitting(true);
     try {
-      const formData = new FormData();
-      formData.append("fullName", data.fullName);
-      formData.append("username", data.username);
-      formData.append("email", data.email);
-
-      if (data.avatar && data.avatar instanceof File) {
-        formData.append("avatar", data.avatar);
+      console.log("Submitting data:", data);
+      console.log("Full Name:", data.fullName);
+      console.log("Username:", data.username);
+      console.log("Email:", data.email);
+      if (
+        data.fullName === userDetails?.fullName &&
+        data.username === userDetails?.username &&
+        data.email === userDetails?.email
+      ) {
+        toast({
+          title: "No changes detected",
+          variant: "default",
+        });
+        return;
       }
 
-      if (data.coverImage && data.coverImage instanceof File) {
-        formData.append("coverImage", data.coverImage);
-      }
-
-      const response = await axiosInstance.patch(
-        "/users/update-account",
-        formData
-      );
+      const response = await axiosInstance.patch("/users/update-account", data);
 
       // Update Redux store with the updated user data
       dispatch(login(response.data.data));
@@ -122,34 +123,112 @@ function EditProfile() {
     }
   };
 
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      form.setValue("avatar", file);
-      const reader = new FileReader();
-      reader.onload = () => {
-        setAvatarPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    // Show preview immediately
+    const reader = new FileReader();
+    reader.onload = () => {
+      setAvatarPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Start upload process
+    setIsAvatarUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      const avatarResponse = await axiosInstance.patch(
+        "/users/avatar",
+        formData
+      );
+
+      // Update preview with the actual uploaded image URL
+      setAvatarPreview(avatarResponse.data.data.avatar);
+
+      // Update Redux store with new avatar
+      dispatch(
+        login({
+          ...userDetails,
+          avatar: avatarResponse.data.data.avatar,
+        })
+      );
+
+      toast({
+        title: "Avatar updated successfully",
+      });
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const errorMessage = geterrorMessage((error as any)?.response?.data);
+      toast({
+        title: `Avatar upload failed: ${errorMessage}`,
+        variant: "destructive",
+      });
+      // Revert preview to previous avatar
+      setAvatarPreview(userDetails?.avatar || null);
+    } finally {
+      setIsAvatarUploading(false);
     }
   };
 
-  const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverImageChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
-    if (file) {
-      form.setValue("coverImage", file);
-      const reader = new FileReader();
-      reader.onload = () => {
-        setCoverPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    // Show preview immediately
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCoverPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Start upload process
+    setIsCoverUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("coverImage", file);
+
+      const coverResponse = await axiosInstance.patch(
+        "/users/cover-image",
+        formData
+      );
+
+      // Update preview with the actual uploaded image URL
+      setCoverPreview(coverResponse.data.data.coverImage);
+
+      // Update Redux store with new cover image
+      dispatch(
+        login({
+          ...userDetails,
+          coverImage: coverResponse.data.data.coverImage,
+        })
+      );
+
+      toast({
+        title: "Cover image updated successfully",
+      });
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const errorMessage = geterrorMessage((error as any)?.response?.data);
+      toast({
+        title: `Cover image upload failed: ${errorMessage}`,
+        variant: "destructive",
+      });
+      // Revert preview to previous cover image
+      setCoverPreview(userDetails?.coverImage || null);
+    } finally {
+      setIsCoverUploading(false);
     }
   };
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-4xl">
       <h1 className="text-3xl font-bold text-primary mb-6">Edit Profile</h1>
-      
+
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle>Personal Information</CardTitle>
@@ -185,8 +264,17 @@ function EditProfile() {
                         htmlFor="cover-image-upload"
                         className="cursor-pointer bg-white/80 text-black px-4 py-2 rounded-md flex items-center gap-2 hover:bg-white"
                       >
-                        <Upload size={16} />
-                        Change Cover
+                        {isCoverUploading ? (
+                          <>
+                            <Loader2 size={16} className="animate-spin" />
+                            Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <Upload size={16} />
+                            Change Cover
+                          </>
+                        )}
                       </label>
                       <input
                         id="cover-image-upload"
@@ -194,6 +282,7 @@ function EditProfile() {
                         accept="image/*"
                         className="hidden"
                         onChange={handleCoverImageChange}
+                        disabled={isCoverUploading}
                       />
                     </div>
                   </div>
@@ -216,7 +305,14 @@ function EditProfile() {
                   </Avatar>
                   <div className="absolute inset-0 rounded-full bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                     <label htmlFor="avatar-upload" className="cursor-pointer">
-                      <Upload size={18} className="text-white" />
+                      {isAvatarUploading ? (
+                        <Loader2
+                          size={18}
+                          className="text-white animate-spin"
+                        />
+                      ) : (
+                        <Upload size={18} className="text-white" />
+                      )}
                     </label>
                     <input
                       id="avatar-upload"
@@ -224,6 +320,7 @@ function EditProfile() {
                       accept="image/*"
                       className="hidden"
                       onChange={handleAvatarChange}
+                      disabled={isAvatarUploading}
                     />
                   </div>
                 </div>
@@ -246,7 +343,11 @@ function EditProfile() {
                     <FormItem>
                       <FormLabel>Full Name</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Your full name" className="border-blue-500" />
+                        <Input
+                          {...field}
+                          placeholder="Your full name"
+                          className="border-blue-500"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
