@@ -1,8 +1,8 @@
 import { NavLink } from "react-router";
-import { Input } from "../ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
 import { ModeToggle } from "../mode-toggle";
+import SearchInput from "./SearchInput";
 
 const Header = () => {
   return (
@@ -19,7 +19,7 @@ const Header = () => {
           <span className="md:text-3xl text-xl">VideoTube</span>
         </NavLink>
       </h1>
-      <Input className="md:w-3/4 w-2/4 border-2" placeholder="Search"></Input>
+      <SearchInput />
       <div className="hidden md:flex items-center gap-4">
         {/* TODO: Add the ModeToggle component somewhere in the sidebar for mobile */}
         <ModeToggle />

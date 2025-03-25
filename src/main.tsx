@@ -20,6 +20,7 @@ import LikedVideos from "./pages/LikedVideos.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 import Playlists from "./pages/Playlists.tsx";
 import PlayListVideos from "./pages/PlayListVideos.tsx";
+import SearchResults from "./pages/SearchResults.tsx";
 
 const router = createBrowserRouter([
   {
@@ -113,6 +114,10 @@ const router = createBrowserRouter([
       {
         path: "/watch/:slug",
         element: <WatchVideo />,
+      },
+      {
+        path: "/search",
+        element: <SearchResults />,
       },
     ],
   },
