@@ -43,7 +43,7 @@ function UserVideos() {
           <Loader2 className="animate-spin w-80" />
         </div>
       ) : (
-        <div className="flex flex-1 flex-col gap-4 p-4 md:p-8 pt-0">
+        <div className="flex flex-1 flex-col gap-4 p-4 md:px-8 pt-0">
           {videos.length > 0 ? (
             videos.map((video) => (
               <Link
@@ -52,7 +52,7 @@ function UserVideos() {
                 key={video._id}
               >
                 <div
-                  className="flex flex-1 flex-col gap-4 md:p-8 pt-0 w-full"
+                  className="flex flex-1 flex-col gap-4 md:px-8 pt-0 w-full"
                   key={video._id}
                 >
                   <div className="flex">

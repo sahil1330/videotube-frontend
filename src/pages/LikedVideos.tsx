@@ -42,7 +42,7 @@ function LikedVideos() {
           <Loader2 className="animate-spin w-80" />
         </div>
       ) : (
-        <div className="flex flex-1 flex-col sm:gap-4 gap-2 md:p-8 p-4 pt-0">
+        <div className="flex flex-1 flex-col sm:gap-4 gap-2 md:px-8 p-4 pt-0">
           {likeVideoDetails.length > 0 ? (
             likeVideoDetails.map((likeVideoDetail) => (
               <Link
@@ -51,7 +51,7 @@ function LikedVideos() {
                 key={likeVideoDetail?.video?._id}
               >
                 <div
-                  className="flex flex-1 flex-col gap-4 md:p-8 pt-0 w-full"
+                  className="flex flex-1 flex-col gap-4 md:px-8 pt-0 w-full"
                   key={likeVideoDetail?.video?._id}
                 >
                   <div className="flex">
