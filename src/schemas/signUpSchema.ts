@@ -13,14 +13,14 @@ export const signUpSchema = z.object({
   // avatar: z.instanceof(File).refine((file) => file.size < 1000000, {
   //   message: "File size must be less than 1MB.",
   // }),
-  avatar: z.instanceof(File).refine((file)=> file.size < 1000000, {
-    message: "File size must be less than 1MB."
+  avatar: z.instanceof(File).refine((file) => file.size < 1000000, {
+    message: "Avatar File size must be less than 1MB.",
   }),
   password: z
     .string()
     .min(6, { message: "Password must be atleast 6 characters." })
     .max(40, { message: "Password is too long." }),
   coverImage: z.instanceof(File).refine((file) => file.size < 10000000, {
-    message: "File size must be less than 10MB.",
+    message: "Cover Image File size must be less than 10MB.",
   }),
 });

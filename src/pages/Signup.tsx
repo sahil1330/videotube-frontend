@@ -181,11 +181,11 @@ const Signup = () => {
               {isSubmitting ? (
                 <Button type="submit" className="dark:text-white" disabled>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Submit
+                  Sign Up
                 </Button>
               ) : (
                 <Button type="submit" className="dark:text-white">
-                  Submit
+                  Sign Up
                 </Button>
               )}
             </form>

@@ -107,7 +107,7 @@ const Login = () => {
               {isSubmitting ? (
                 <Button type="submit" className="dark:text-white" disabled>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Submit
+                  Sign In
                 </Button>
               ) : (
                 <Button type="submit" className="dark:text-white">
@@ -116,7 +116,7 @@ const Login = () => {
               )}
             </form>
           </Form>
-          <p className="text-center m-4 text-black">
+          <p className="text-center m-4 text-secondary-foreground">
             Not registered?{" "}
             <Link to={"/Signup"} className="text-blue-600">
               Signup
