@@ -21,6 +21,8 @@ import { ThemeProvider } from "./components/theme-provider.tsx";
 import Playlists from "./pages/Playlists.tsx";
 import PlayListVideos from "./pages/PlayListVideos.tsx";
 import SearchResults from "./pages/SearchResults.tsx";
+import CreatePost from "./pages/CreatePost.tsx";
+import EditPost from "./pages/EditPost.tsx";
 
 const router = createBrowserRouter([
   {
@@ -52,6 +54,22 @@ const router = createBrowserRouter([
         element: (
           <AuthLayout authentication={true} url="/upload-video">
             <UploadVideo />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/create-post",
+        element: (
+          <AuthLayout authentication={true} url="/upload-video">
+            <CreatePost />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/edit-post/:postId",
+        element: (
+          <AuthLayout authentication={true} url="/edit-post/:postId">
+            <EditPost />
           </AuthLayout>
         ),
       },

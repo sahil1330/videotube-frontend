@@ -5,6 +5,13 @@ import { PlayListSchema } from "./playListSchema";
 import { VideoSchema } from "./VideoSchema";
 import { UserSchema } from "./UserSchema";
 import { videoUploadSchema } from "./videoUploadSchema";
-export { signUpSchema, signInSchema, commentSchema, videoUploadSchema };
-export type { PlayListSchema, VideoSchema, UserSchema };
-export type { ICommunityPost } from "./communityPost";
+import { postSchema } from "./postSchema";
+import { ICommunityPost } from "./communityPost";
+export {
+  signUpSchema,
+  signInSchema,
+  commentSchema,
+  videoUploadSchema,
+  postSchema,
+};
+export type { PlayListSchema, VideoSchema, UserSchema, ICommunityPost };

@@ -3,9 +3,21 @@ import axiosInstance from "@/utils/axiosInstance";
 import React, { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatDistanceToNow } from "date-fns";
+import { MoreVertical } from "lucide-react";
+import { Button } from "../ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@radix-ui/react-dropdown-menu";
+import { useNavigate } from "react-router";
 
 function CommunityTab({ user }: { user: UserSchema }) {
   const [communityPosts, setCommunityPosts] = useState<ICommunityPost[]>([]);
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchCommunityPosts = async () => {
       console.log("User ID", user._id);
@@ -15,6 +27,25 @@ function CommunityTab({ user }: { user: UserSchema }) {
     };
     fetchCommunityPosts();
   }, []);
+
+  const handleEdit = (postId: string) => {
+    navigate(`/edit-post/${postId}`);
+  };
+
+  const handleDelete = async (postId: string) => {
+    console.log("Delete post with ID:", postId);
+    try {
+      const response = await axiosInstance.delete(`/tweets/${postId}`);
+      console.log("Post deleted successfully", response.data.message);
+      setCommunityPosts((prevPosts) =>
+        prevPosts.filter((post) => post._id !== postId)
+      );
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
+  }
+
+
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
       {communityPosts.length > 0 ? (
@@ -43,7 +74,7 @@ function CommunityTab({ user }: { user: UserSchema }) {
                     })}
                   </p>
                 </p>
-                <p className="text-white">{post.content}</p>
+                <p className="text-secondary-foreground">{post.content}</p>
                 {post.contentImage && (
                   <img
                     src={post.contentImage}
@@ -62,7 +93,34 @@ function CommunityTab({ user }: { user: UserSchema }) {
               </div>
 
               <span className="text-sm text-gray-500">
-                {new Date(post.createdAt).toLocaleDateString()}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant={"ghost"}>
+                      <MoreVertical className="text-gray-500" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel className="text-gray-500">
+                      <Button
+                        variant={"outline"}
+                        className="w-full text-left"
+                        onClick={() => handleEdit(post._id)}
+                      >
+                        Edit
+                      </Button>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel className="text-gray-500">
+                      <Button
+                        variant={"destructive"}
+                        className="w-full text-left"
+                        onClick={() => handleDelete(post._id)}
+                      >
+                        Delete
+                      </Button>
+                    </DropdownMenuLabel>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </span>
             </div>
           ))}
@@ -72,7 +130,6 @@ function CommunityTab({ user }: { user: UserSchema }) {
           <p className="text-lg">No Community Posts Available</p>
         </div>
       )}
-
     </div>
   );
 }
