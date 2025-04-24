@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import CommunityTab from "@/components/CommunityTab/CommunityTab";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import VideoCard from "@/components/VideoCard";
 import { useToast } from "@/hooks/use-toast";
 import { UserSchema } from "@/schemas";
@@ -198,15 +200,25 @@ function Account() {
         </div>
       </div>
       <Separator />
-      <h2 className="px-10 py-4 text-3xl font-bold text-primary">Videos</h2>
-      <div className="account-videos w-full py-4">
-        <div className="grid auto-rows-min gap-4 md:grid-cols-3 w-11/12 mx-auto">
-          {accountVideos.length > 0 &&
-            accountVideos.map((video, index) => (
-              <VideoCard key={index} {...video} />
-            ))}
-        </div>
-      </div>
+      <Tabs defaultValue="videos" className="w-full px-10">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="videos">Videos</TabsTrigger>
+          <TabsTrigger value="community">Community</TabsTrigger>
+        </TabsList>
+        <TabsContent value="videos">
+          <div className="account-videos w-full py-4">
+            <div className="grid auto-rows-min gap-4 md:grid-cols-3 w-11/12 mx-auto">
+              {accountVideos.length > 0 &&
+                accountVideos.map((video, index) => (
+                  <VideoCard key={index} {...video} />
+                ))}
+            </div>
+          </div>
+        </TabsContent>
+        <TabsContent value="community">
+          {accountDetails && <CommunityTab user={accountDetails} />}
+        </TabsContent>
+      </Tabs>
     </div>
   ) : (
     "Account not found"

@@ -31,9 +31,18 @@ function LikedVideos() {
       }
       setIsLoading(false);
     }
-    fetchLikedVideos();
+    (async () => {
+      await fetchLikedVideos();
+    })();
     setIsLoading(false);
   }, []);
+  if (isLoading) {
+    return (
+      <div className="flex flex-1 items-center justify-center">
+        <Loader2 className="animate-spin w-80" />
+      </div>
+    );
+  }
   return (
     <div>
       <h1 className="p-4 text-3xl font-bold text-blue-500">Liked Videos</h1>

@@ -7,3 +7,4 @@ import { UserSchema } from "./UserSchema";
 import { videoUploadSchema } from "./videoUploadSchema";
 export { signUpSchema, signInSchema, commentSchema, videoUploadSchema };
 export type { PlayListSchema, VideoSchema, UserSchema };
+export type { ICommunityPost } from "./communityPost";
