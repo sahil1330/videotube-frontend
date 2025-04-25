@@ -3,7 +3,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import React, { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatDistanceToNow } from "date-fns";
-import { MoreVertical } from "lucide-react";
+import { Loader2, MoreVertical } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,
@@ -13,20 +13,38 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { useNavigate } from "react-router";
+import { useToast } from "@/hooks/use-toast";
+import geterrorMessage from "@/utils/errorMessage";
 
 function CommunityTab({ user }: { user: UserSchema }) {
   const [communityPosts, setCommunityPosts] = useState<ICommunityPost[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-
+  const { toast } = useToast();
   useEffect(() => {
-    const fetchCommunityPosts = async () => {
-      console.log("User ID", user._id);
-      const response = await axiosInstance.get(`/tweets/user/${user._id}`);
-      console.log("Community Posts", response.data.data);
-      setCommunityPosts(response.data.data);
-    };
-    fetchCommunityPosts();
-  }, []);
+    setIsLoading(true);
+    try {
+      const fetchCommunityPosts = async () => {
+        console.log("User ID", user._id);
+        const response = await axiosInstance.get(`/tweets/user/${user._id}`);
+        console.log("Community Posts", response.data.data);
+        setCommunityPosts(response.data.data);
+      };
+      (async () => {
+        await fetchCommunityPosts();
+      })();
+    } catch (error) {
+      const errorMessage = geterrorMessage(error as never);
+      console.error("Error fetching community posts:", errorMessage);
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user._id]);
 
   const handleEdit = (postId: string) => {
     navigate(`/edit-post/${postId}`);
@@ -43,20 +61,19 @@ function CommunityTab({ user }: { user: UserSchema }) {
     } catch (error) {
       console.error("Error deleting post:", error);
     }
-  }
+  };
 
-
-  return (
-    <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+  return !isLoading ? (
+    <div className="flex flex-1 flex-col gap-4 p-2 md:p-4 pt-0">
       {communityPosts.length > 0 ? (
         <div>
           {communityPosts.map((post) => (
             <div
               key={post._id}
-              className="flex my-6 gap-2 p-4 border w-3/4 border-white"
+              className="flex my-6 gap-2 p-4 border w-full md:w-3/4 border-white"
             >
               <div className="userDetails flex gap-2">
-                <Avatar className="h-[70px] w-[70px] aspect-square">
+                <Avatar className="md:h-[70px] md:w-[70px] h-[60px] w-[60px] aspect-square">
                   <AvatarImage
                     src={user.avatar}
                     alt={user.username}
@@ -79,7 +96,7 @@ function CommunityTab({ user }: { user: UserSchema }) {
                   <img
                     src={post.contentImage}
                     alt="Community Post"
-                    className="w-3/4 h-auto rounded-lg"
+                    className="md:w-3/4 max-w-full h-auto rounded-lg"
                   />
                 )}
                 {/* <div className="enganements">
@@ -130,6 +147,10 @@ function CommunityTab({ user }: { user: UserSchema }) {
           <p className="text-lg">No Community Posts Available</p>
         </div>
       )}
+    </div>
+  ) : (
+    <div className="flex flex-1 items-center justify-center">
+      <Loader2 className="animate-spin" size={24} />
     </div>
   );
 }

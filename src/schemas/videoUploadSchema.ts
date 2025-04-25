@@ -8,5 +8,5 @@ export const videoUploadSchema = z.object({
   }),
   thumbnail: z.instanceof(File).refine((file) => file.size < 10000000, {
     message: "Thumbnail File size must be less than 10MB.",
-  }),
+  }).optional(),
 });

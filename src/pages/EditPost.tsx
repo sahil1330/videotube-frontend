@@ -8,7 +8,6 @@ import { Loader2, X, Upload } from "lucide-react";
 import axiosInstance from "@/utils/axiosInstance";
 import geterrorMessage from "@/utils/errorMessage";
 import { useToast } from "@/hooks/use-toast";
-import { ICommunityPost } from "@/schemas";
 
 import {
   Form,
@@ -30,35 +29,26 @@ import {
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { postSchema } from "@/schemas";
 
-// Create schema for post editing
-const postEditSchema = z.object({
-  content: z.string().min(1, { message: "Post content is required." }),
-  postImage: z
-    .instanceof(File)
-    .refine((file) => file.size < 1000000, {
-      message: "Image size must be less than 1MB.",
-    })
-    .optional()
-    .nullable(),
-});
-
-type PostFormValues = z.infer<typeof postEditSchema>;
+type PostFormValues = z.infer<typeof postSchema>;
 
 function EditPost() {
   const { postId } = useParams<{ postId: string }>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | undefined>(
+    undefined
+  );
   const navigate = useNavigate();
   const { toast } = useToast();
 
   // Initialize the form
   const form = useForm<PostFormValues>({
-    resolver: zodResolver(postEditSchema),
+    resolver: zodResolver(postSchema),
     defaultValues: {
-      content: "",
-      postImage: null,
+      postContent: "",
+      postImage: undefined,
     },
   });
 
@@ -73,21 +63,21 @@ function EditPost() {
         const post = response.data.data;
 
         form.reset({
-          content: post.content || "",
+          postContent: post.content || "",
+          postImage: undefined,
         });
 
         if (post.contentImage) {
           setImagePreview(post.contentImage);
         }
       } catch (error) {
-            console.error("Error fetching playlist videos:", error);
-            const errorMessage = geterrorMessage((error as any)?.response?.data);
-            toast({
-              title: errorMessage,
-              variant: "destructive",
-            });
-
-          }finally {
+        console.error("Error fetching playlist videos:", error);
+        const errorMessage = geterrorMessage((error as any)?.response?.data);
+        toast({
+          title: errorMessage,
+          variant: "destructive",
+        });
+      } finally {
         setIsLoading(false);
       }
     };
@@ -111,8 +101,8 @@ function EditPost() {
   };
 
   const handleRemoveImage = () => {
-    setImagePreview(null);
-    form.setValue("postImage", null);
+    setImagePreview(undefined);
+    form.setValue("postImage", undefined);
   };
 
   const onSubmit = async (data: PostFormValues) => {
@@ -121,10 +111,10 @@ function EditPost() {
     setIsSubmitting(true);
     try {
       const formData = new FormData();
-      formData.append("content", data.content);
+      formData.append("content", data.postContent);
 
       if (data.postImage) {
-        formData.append("postImage", data.postImage);
+        formData.append("tweetImage", data.postImage);
       }
 
       await axiosInstance.patch(`/tweets/${postId}`, formData);
@@ -172,7 +162,7 @@ function EditPost() {
               {/* Post Content */}
               <FormField
                 control={form.control}
-                name="content"
+                name="postContent"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Post Content</FormLabel>

@@ -56,7 +56,7 @@ function App() {
         <AppSidebar />
         <SidebarInset>
           <main>
-            <div className="flex items-center px-4 md:bg-inherit bg-primary-foreground sticky top-0 z-10">
+            <div className="flex items-center px-4 md:bg-gray-900 bg-primary-foreground sticky top-0 z-10">
               <SidebarTrigger />
               <Header />
             </div>

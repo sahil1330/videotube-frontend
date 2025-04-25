@@ -191,6 +191,7 @@ function Account() {
                   variant="outline"
                   className="outline-blue-600 mx-2"
                   size="sm"
+                  onClick={() => navigate("/manage-videos")}
                 >
                   Manage Videos
                 </Button>
@@ -200,7 +201,7 @@ function Account() {
         </div>
       </div>
       <Separator />
-      <Tabs defaultValue="videos" className="w-full px-10">
+      <Tabs defaultValue="videos" className="w-full px-4 md:px-10">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="videos">Videos</TabsTrigger>
           <TabsTrigger value="community">Community</TabsTrigger>
