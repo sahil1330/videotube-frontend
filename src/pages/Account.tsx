@@ -191,7 +191,7 @@ function Account() {
                   variant="outline"
                   className="outline-blue-600 mx-2"
                   size="sm"
-                  onClick={() => navigate("/manage-videos")}
+                  onClick={() => navigate(`/${accountDetails?.username}/videos`)}
                 >
                   Manage Videos
                 </Button>

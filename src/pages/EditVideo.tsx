@@ -18,11 +18,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { VideoSchema, videoUploadSchema } from "@/schemas";
+import { videoEditSchema, VideoSchema } from "@/schemas";
 import axiosInstance from "@/utils/axiosInstance";
 import geterrorMessage from "@/utils/errorMessage";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router";
@@ -41,12 +41,11 @@ function EditVideo() {
   const navigate = useNavigate();
 
   // Initialize the form
-  const form = useForm<z.infer<typeof videoUploadSchema>>({
-    resolver: zodResolver(videoUploadSchema),
+  const form = useForm<z.infer<typeof videoEditSchema>>({
+    resolver: zodResolver(videoEditSchema),
     defaultValues: {
       title: "",
       description: "",
-      videoFile: undefined,
       thumbnail: undefined,
     },
   });
@@ -61,7 +60,7 @@ function EditVideo() {
         setVideo(response.data.data);
         form.setValue("title", response.data.data.title);
         form.setValue("description", response.data.data.description);
-        setThumbnailPreview(response.data.data.thumbnailUrl);
+        setThumbnailPreview(response.data.data.thumbnail);
       };
       fetchVideo();
     } catch (error) {
@@ -96,7 +95,7 @@ function EditVideo() {
     setThumbnailPreview(undefined);
   };
 
-  const onSubmit = async (data: z.infer<typeof videoUploadSchema>) => {
+  const onSubmit = async (data: z.infer<typeof videoEditSchema>) => {
     console.log("Form submitted with data:", data);
     setIsSubmitting(true);
     try {
@@ -109,7 +108,7 @@ function EditVideo() {
 
       console.log("Sending request to update video:", videoId);
       const response = await axiosInstance.patch(
-        `/videos/${videoId}`,
+        `/${video?.owner?.username}/videos`,
         formData
       );
       console.log("Update response:", response.data);
@@ -120,7 +119,9 @@ function EditVideo() {
       navigate(`/video/${videoId}`);
     } catch (error) {
       console.error("Error updating video:", error);
-      const errorMessage = geterrorMessage((error as any)?.response?.data || error);
+      const errorMessage = geterrorMessage(
+        (error as any)?.response?.data || error
+      );
       toast({
         title: "Error",
         description: errorMessage || "Failed to update video",
@@ -129,14 +130,6 @@ function EditVideo() {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleButtonClick = () => {
-    console.log("Update button clicked");
-    const formState = form.getValues();
-    console.log("Current form state:", formState);
-    
-    form.handleSubmit(onSubmit)();
   };
 
   return !isLoading ? (
@@ -152,14 +145,7 @@ function EditVideo() {
             </CardDescription>
           </CardHeader>
           <Form {...form}>
-            <form 
-              className="px-6 py-4" 
-              onSubmit={(e) => {
-                e.preventDefault();
-                console.log("Form submit event triggered");
-                form.handleSubmit(onSubmit)(e);
-              }}
-            >
+            <form className="px-6 py-4" onSubmit={form.handleSubmit(onSubmit)}>
               <FormField
                 control={form.control}
                 name="title"
@@ -212,19 +198,20 @@ function EditVideo() {
                       />
                     </FormControl>
                     {thumbnailPreview && (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 max-w-fit relative z-0">
                         <img
                           src={thumbnailPreview}
                           alt="Thumbnail Preview"
-                          className="w-32 aspect-video object-cover rounded-md"
+                          className="w-64 aspect-video object-cover rounded-md"
                         />
-                        <button
+                        <Button
                           type="button"
                           onClick={handleRemoveThumbnail}
-                          className="text-red-500 aspect-auto hover:text-red-700"
+                          variant="destructive"
+                          className="text-white aspect-square hover:bg-red-500 rounded-md p-1 absolute top-2 right-2 z-10"
                         >
-                          Remove Thumbnail
-                        </button>
+                          <X className="h-3 w-3" />
+                        </Button>
                       </div>
                     )}
                     <FormMessage />
@@ -233,14 +220,13 @@ function EditVideo() {
               />
 
               {isSubmitting ? (
-                <Button disabled className="text-3xl text-secondary-foreground">
+                <Button disabled className="w-full my-6 text-secondary-foreground">
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Updating ...
                 </Button>
               ) : (
                 <Button
-                  type="button" 
+                  type="submit"
                   className="w-full my-6 text-secondary-foreground"
-                  onClick={handleButtonClick}
                 >
                   Update Video
                 </Button>

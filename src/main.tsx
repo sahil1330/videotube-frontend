@@ -23,7 +23,6 @@ import PlayListVideos from "./pages/PlayListVideos.tsx";
 import SearchResults from "./pages/SearchResults.tsx";
 import CreatePost from "./pages/CreatePost.tsx";
 import EditPost from "./pages/EditPost.tsx";
-import ManageVideos from "./pages/ManageVideos.tsx";
 import EditVideo from "./pages/EditVideo.tsx";
 
 const router = createBrowserRouter([
@@ -60,10 +59,10 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/manage-videos",
+        path: "/:slug/videos",
         element: (
-          <AuthLayout authentication={true} url="/manage-videos">
-            <ManageVideos />
+          <AuthLayout authentication={true} url="/:slug/videos">
+            <UserVideos />
           </AuthLayout>
         ),
       },
