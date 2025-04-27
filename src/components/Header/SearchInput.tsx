@@ -20,6 +20,85 @@ function SearchInput() {
   const handleInputChange = useCallback(
     async (value: string) => {
       setIsLoading(true);
+
+      // Clear any previous timeouts for proper debouncing
+      const debounceTimeout = setTimeout(async () => {
+        setIsLoading(false);
+        if (value) {
+          try {
+            const response = await axiosInstance.get(`/search?q=${value}`);
+            // Rest of the search handling code remains the same
+
+            // Function to check for duplicates
+            const isDuplicate = (id: string) => {
+              return searchResults.some((result) => result?._id === id);
+            };
+
+            // Process video results
+            const videoResults = response.data.data.videos
+              .map((video: { _id: string; title: string }) => {
+                // Skip duplicates
+                if (isDuplicate(video._id)) {
+                  return null;
+                }
+
+                return {
+                  _id: video._id,
+                  title: video.title,
+                  type: "video",
+                };
+              })
+              .filter(Boolean); // Remove null values
+
+            // Process channel results
+            const channelResults = response.data.data.users
+              .map(
+                (channel: {
+                  _id: string;
+                  username: string;
+                  fullName: string;
+                }) => {
+                  if (isDuplicate(channel._id)) {
+                    return null;
+                  }
+
+                  // Check if username or fullName matches search value
+                  if (channel.username.includes(value)) {
+                    return {
+                      _id: channel._id,
+                      title: channel.username,
+                      type: "channel",
+                    };
+                  }
+
+                  if (channel.fullName.includes(value)) {
+                    return {
+                      _id: channel._id,
+                      title: channel.fullName,
+                      type: "channel",
+                    };
+                  }
+
+                  return null;
+                }
+              )
+              .filter(Boolean); // Remove null values
+
+            // Combine results
+            const combinedResults = [...videoResults, ...channelResults];
+            setSearchResults(combinedResults);
+            console.log("Combined Results:", combinedResults);
+          } catch (error) {
+            console.error("Error searching:", error);
+          }
+        } else {
+          // Clear results if search value is empty
+          setSearchResults([]);
+        }
+      }, 1000);
+
+      // Return cleanup function to clear timeout when component unmounts or new search starts
+      return () => clearTimeout(debounceTimeout);
       setTimeout(async () => {
         setIsLoading(false);
         if (value) {
