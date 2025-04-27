@@ -19,7 +19,8 @@ interface TransformedVideoProps {
 }
 
 function TransformedVideo({ videoPublicId, poster, controls, sourceConfig, width, height }: TransformedVideoProps) {
-    const playerRef = useRef<HTMLVideoElement | null>(null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const playerRef = useRef<any | null>(null);
     const cloudinaryRef = useRef<typeof cloudinary | null>(null);
     useEffect(() => {
         if (cloudinaryRef.current) return;
