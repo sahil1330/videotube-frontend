@@ -11,7 +11,7 @@ import {
   formatDistanceToNow,
 } from "date-fns";
 import { Loader2, MoreVertical } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface videoSearchResult {
   _id: string;

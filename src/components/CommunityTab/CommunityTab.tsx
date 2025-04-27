@@ -1,6 +1,6 @@
 import { ICommunityPost, UserSchema } from "@/schemas";
 import axiosInstance from "@/utils/axiosInstance";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { Loader2, MoreVertical } from "lucide-react";
