@@ -98,7 +98,11 @@ const Login = () => {
                     <FormControl>
                       <Input placeholder="Enter Your Password" {...field} />
                     </FormControl>
-                    <FormDescription></FormDescription>
+                    <FormDescription>
+                      <Link to={"/forget-password"} className="text-blue-600">
+                        Forget Password?
+                      </Link>
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

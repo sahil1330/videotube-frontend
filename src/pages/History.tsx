@@ -9,7 +9,7 @@ import { formatDistanceToNow } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 
 function History() {
-    const [videos, setVideos] = useState<VideoSchema[]>([]);
+    const [videosMap, setVideosMap] = useState<Map<string, VideoSchema>>(new Map());
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
@@ -48,21 +48,30 @@ function History() {
                 return;
             }
 
+            // Create a new Map for the batch update
+            const newVideosMap = new Map(videosMap);
+            let hasNewVideos = false;
+
             // Fetch videos one by one
-            const fetchedVideos: any[] = [];
             for (const videoId of videoIdsToFetch) {
-                // Fetch video details using the video ID
-                if (videos.some(video => video._id === videoId)) continue; // Skip if already fetched
+                // Skip if already in our map
+                if (newVideosMap.has(videoId)) continue;
+                
                 try {
                     const response = await axiosInstance.get(`/videos/${videoId}`);
-                    fetchedVideos.push(response.data.data);
+                    newVideosMap.set(videoId, response.data.data);
+                    hasNewVideos = true;
                 } catch (err) {
                     console.error(`Failed to fetch video with ID: ${videoId}`, err);
                     // Continue with other videos even if one fails
                 }
             }
 
-            setVideos((prev) => [...prev, ...fetchedVideos]);
+            // Only update state if we have new videos
+            if (hasNewVideos) {
+                setVideosMap(newVideosMap);
+            }
+            
             setHasMore(videoIdsToFetch.length === pageSize && end < userDetails.watchHistory.length);
         } catch (error) {
             console.error("Error fetching watched videos:", error);
@@ -73,7 +82,10 @@ function History() {
         } finally {
             setLoading(false);
         }
-    }, [page, userDetails?.watchHistory, toast, pageSize]);
+    }, [page, userDetails?.watchHistory, toast, pageSize, videosMap]);
+
+    // Convert the Map to an array for rendering
+    const videos = Array.from(videosMap.values());
 
     useEffect(() => {
         fetchWatchedVideos();

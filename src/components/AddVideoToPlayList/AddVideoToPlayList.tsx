@@ -111,7 +111,7 @@ function AddVideoToPlayList({
             }}
           >
             <ListVideo />
-            <span className="hidden md:inline">Save Video</span>
+            <span className="hidden md:inline">Save</span>
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">

@@ -24,6 +24,7 @@ import SearchResults from "./pages/SearchResults.tsx";
 import CreatePost from "./pages/CreatePost.tsx";
 import EditPost from "./pages/EditPost.tsx";
 import EditVideo from "./pages/EditVideo.tsx";
+import ForgetPassword from "./pages/ForgetPassword.tsx";
 
 const router = createBrowserRouter([
   {
@@ -47,6 +48,14 @@ const router = createBrowserRouter([
         element: (
           <AuthLayout authentication={false} url="/">
             <Login />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/forget-password",
+        element: (
+          <AuthLayout authentication={false} url="/">
+            <ForgetPassword />
           </AuthLayout>
         ),
       },
