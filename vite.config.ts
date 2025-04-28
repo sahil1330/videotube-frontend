@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://videotube-gm5j2.ondigitalocean.app",
+        target: "http://localhost:8000",
         changeOrigin: true,
       },
     },
