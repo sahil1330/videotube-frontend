@@ -15,12 +15,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router";
 import { useToast } from "@/hooks/use-toast";
 import { useDispatch } from "react-redux";
 import { login } from "@/store/authSlice";
 import geterrorMessage from "@/utils/errorMessage";
+import axiosInstance from "@/utils/axiosInstance";
 
 const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -37,8 +37,8 @@ const Login = () => {
 
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
     setIsSubmitting(true);
-    await axios
-      .post("/api/v1/users/login", data)
+    await axiosInstance
+      .post("/users/login", data)
       .then((res) => res.data)
       .then((data) => {
         toast({
