@@ -7,11 +7,10 @@ import { UserSchema, VideoSchema } from "@/schemas";
 import axiosInstance from "@/utils/axiosInstance";
 import { Avatar } from "@radix-ui/react-avatar";
 import { Separator } from "@radix-ui/react-dropdown-menu";
-import {
-  formatDistanceToNow,
-} from "date-fns";
-import { Loader2, MoreVertical } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
 
 interface videoSearchResult {
   _id: string;
@@ -150,7 +149,10 @@ function SearchResults() {
                     </Avatar>
                   </div>
                 </div>
-                <div className="video-details my-4 flex flex-col gap-2">
+                <Link
+                  to={`/${channel.username}`}
+                  className="video-details my-4 flex flex-col gap-2"
+                >
                   <h2 className="text-lg font-semibold">{channel.fullName}</h2>
                   <p className="text-sm text-gray-500 flex gap-2 items-center">
                     {channel.username}{" "}
@@ -159,13 +161,7 @@ function SearchResults() {
                       addSuffix: true,
                     })}{" "}
                   </p>
-                </div>
-                <Button
-                  variant={"secondary"}
-                  className="absolute top-2 right-2"
-                >
-                  <MoreVertical />
-                </Button>
+                </Link>
               </div>
             ))}
           </div>
@@ -173,7 +169,11 @@ function SearchResults() {
         {videoSearchResults.length > 0 && (
           <div className="flex flex-col gap-4 relative">
             {videoSearchResults.map((video) => (
-              <div key={video._id} className="flex gap-2">
+              <Link
+                to={`/watch/${video._id}`}
+                key={video._id}
+                className="flex gap-2"
+              >
                 <div className="w-1/3 aspect-video relative">
                   <img
                     src={video.thumbnail}
@@ -214,10 +214,8 @@ function SearchResults() {
                 <Button
                   variant={"secondary"}
                   className="absolute top-2 right-2"
-                >
-                  <MoreVertical />
-                </Button>
-              </div>
+                ></Button>
+              </Link>
             ))}
           </div>
         )}

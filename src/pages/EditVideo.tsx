@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { videoEditSchema, VideoSchema } from "@/schemas";
+import { videoEditSchema } from "@/schemas";
 import axiosInstance from "@/utils/axiosInstance";
 import geterrorMessage from "@/utils/errorMessage";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,7 +32,6 @@ function EditVideo() {
   const { videoId } = useParams<{ videoId: string }>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [video, setVideo] = useState<VideoSchema | undefined>(undefined);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | undefined>(
     undefined
   );
@@ -57,7 +56,6 @@ function EditVideo() {
       const fetchVideo = async () => {
         if (!videoId) return;
         const response = await axiosInstance.get(`/videos/${videoId}`);
-        setVideo(response.data.data);
         form.setValue("title", response.data.data.title);
         form.setValue("description", response.data.data.description);
         setThumbnailPreview(response.data.data.thumbnail);
@@ -107,16 +105,13 @@ function EditVideo() {
       }
 
       console.log("Sending request to update video:", videoId);
-      const response = await axiosInstance.patch(
-        `/${video?.owner?.username}/videos`,
-        formData
-      );
+      const response = await axiosInstance.patch(`/videos/${videoId}`, formData);
       console.log("Update response:", response.data);
       toast({
         title: response.data.message || "Success",
         description: "Your video has been updated successfully!",
       });
-      navigate(`/video/${videoId}`);
+      navigate(`/watch/${videoId}`);
     } catch (error) {
       console.error("Error updating video:", error);
       const errorMessage = geterrorMessage(
@@ -220,7 +215,10 @@ function EditVideo() {
               />
 
               {isSubmitting ? (
-                <Button disabled className="w-full my-6 text-secondary-foreground">
+                <Button
+                  disabled
+                  className="w-full my-6 text-secondary-foreground"
+                >
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Updating ...
                 </Button>
               ) : (

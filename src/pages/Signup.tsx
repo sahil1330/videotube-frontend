@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { signUpSchema } from "@/schemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,9 +16,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import axios from "axios";
 import { useNavigate } from "react-router";
 import { useToast } from "@/hooks/use-toast";
+import geterrorMessage from "@/utils/errorMessage";
+import axiosInstance from "@/utils/axiosInstance";
 
 const Signup = () => {
   // const [username, setUsername] = useState<string>("");
@@ -47,8 +49,8 @@ const Signup = () => {
     formData.append("fullName", data.fullName);
     formData.append("avatar", data.avatar ?? "");
     formData.append("coverImage", data.coverImage ?? "");
-    await axios
-      .post("http://localhost:8000/api/v1/users/register", formData)
+    await axiosInstance
+      .post("/users/register", formData)
       .then((response) => response.data)
       .then((data) => {
         toast({
@@ -57,10 +59,7 @@ const Signup = () => {
         navigate("/login");
       })
       .catch((error) => {
-        const errorData = error.response.data;
-        const preRegex = /<pre>(.*?)<\/pre>/s;
-        const match = preRegex.exec(errorData);
-        const errorMessage = match ? match[1] : "An error occurred";
+        const errorMessage = geterrorMessage((error as any).response.data);
 
         toast({
           title: errorMessage,

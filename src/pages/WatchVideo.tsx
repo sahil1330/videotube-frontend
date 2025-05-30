@@ -12,7 +12,7 @@ import geterrorMessage from "@/utils/errorMessage";
 import { Download, Share, ThumbsDown, ThumbsUp } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { formatDistanceToNow } from "date-fns";
 import { useTheme } from "@/components/theme-provider";
 import AddVideoToPlayList from "@/components/AddVideoToPlayList/AddVideoToPlayList";
@@ -30,6 +30,7 @@ function WatchVideo() {
     value: "Subscribe",
     isSubscribed: false,
   });
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [likes, setLikes] = useState<number>(0);
@@ -373,8 +374,13 @@ function WatchVideo() {
               </h1>
               <div className="user-videos-list flex flex-col gap-4 py-6">
                 {otherVideos.length > 0 &&
-                  otherVideos.map((video, index) => (
-                    <Link to={`/watch/${video._id}`} key={index}>
+                  otherVideos.map((video) => (
+                    <div onClick={
+                      () => {
+                        navigate(`/watch/${video._id}`);
+                        location.reload();
+                      }
+                    } key={video._id}>
                       <div className="user-video-card flex">
                         <video
                           src={video.videoFile}
@@ -397,7 +403,7 @@ function WatchVideo() {
                           </p>
                         </div>
                       </div>
-                    </Link>
+                    </div>
                   ))}
               </div>
             </div>
