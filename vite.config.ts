@@ -33,6 +33,14 @@ export default ({ mode }: { mode: any }) => {
         },
       }
     },
+    preview: {
+      proxy: {
+        "/api": {
+          target: API_URL,
+          changeOrigin: true
+        }
+      }
+    },
     plugins: [],
     resolve: {
       alias: {
