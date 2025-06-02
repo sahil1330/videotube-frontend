@@ -23,6 +23,11 @@ jobs:
         run: bun install # Changed from 'npm install'
 
       - name: Build React app
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_CLOUDINARY_CLOUD_NAME: ${{ secrets.VITE_CLOUDINARY_CLOUD_NAME }}
+          VITE_CLOUDINARY_API_KEY: ${{ secrets.VITE_CLOUDINARY_API_KEY }}
+          VITE_CLOUDINARY_API_SECRET: ${{ secrets.VITE_CLOUDINARY_API_SECRET }}
         run: bun run build # Changed from 'npm run build' (assuming your build script is still 'build' in package.json)
 
       - name: Install SSH client
