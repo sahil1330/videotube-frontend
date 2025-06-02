@@ -20,32 +20,50 @@ import { defineConfig, loadEnv } from "vite";
 //   },
 // });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default ({ mode }: { mode: any }) => {
-  const env = loadEnv(mode, process.cwd());
-  const API_URL = `${env.VITE_API_URL ?? 'http://localhost:8000'}`
-  return defineConfig({
+// export default ({ mode }: { mode: any }) => {
+//   const env = loadEnv(mode, process.cwd());
+//   const API_URL = `${env.VITE_API_URL ?? 'http://localhost:8000'}`
+//   return defineConfig({
+//     server: {
+//       proxy: {
+//         "/api": {
+//           target: API_URL,
+//           changeOrigin: true
+//         },
+//       }
+//     },
+
+//     plugins: [],
+//     resolve: {
+//       alias: {
+//         "@": path.resolve(__dirname, "./src"),
+//       },
+//     },
+//   })
+// }
+
+export default defineConfig(({ mode }) => {
+  // Load env file based on `mode` in the current working directory.
+  // Set the third parameter to '' to load all env regardless of the
+  // `VITE_` prefix.
+  const env = loadEnv(mode, process.cwd(), '')
+  return {
+    // vite config
     server: {
+      host: true,
+      port: 80,
       proxy: {
         "/api": {
-          target: API_URL,
-          changeOrigin: true
-        },
-      }
-    },
-    preview: {
-      proxy: {
-        "/api": {
-          target: API_URL,
-          changeOrigin: true
+          target: env.VITE_API_URL || "http://localhost:8000",
+          changeOrigin: true,
         }
       }
     },
     plugins: [],
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, "./src"),
-      },
-    },
-  })
-}
+        "@": path.resolve(__dirname, './src')
+      }
+    }
+  }
+})
