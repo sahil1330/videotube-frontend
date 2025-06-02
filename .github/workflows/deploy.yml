@@ -1,0 +1,66 @@
+name: Deploy React App to VM (with Bun)
+
+on:
+  push:
+    branches:
+      - main # Or your main branch name (e.g., 'master', 'develop')
+  workflow_dispatch: # Allows manual triggering of the workflow
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest # Or your preferred runner image
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1 # Use the official setup-bun action
+        with:
+          bun-version: latest # Or a specific version like '1.1.x'
+
+      - name: Install dependencies
+        run: bun install # Changed from 'npm install'
+
+      - name: Build React app
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_CLOUDINARY_CLOUD_NAME: ${{ secrets.VITE_CLOUDINARY_CLOUD_NAME }}
+          VITE_CLOUDINARY_API_KEY: ${{ secrets.VITE_CLOUDINARY_API_KEY }}
+          VITE_CLOUDINARY_API_SECRET: ${{ secrets.VITE_CLOUDINARY_API_SECRET }}
+        run: bun run build # Changed from 'npm run build' (assuming your build script is still 'build' in package.json)
+
+      - name: Install SSH client
+        run: sudo apt-get update && sudo apt-get install -y openssh-client
+
+      - name: Setup SSH
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | ssh-add - # Add the private key from secrets
+
+      - name: Transfer dist folder to VM
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock # Ensure the agent is used
+        run: |
+          # Ensure target directory exists on VM
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VM_USERNAME }}@${{ secrets.VM_HOST }} "mkdir -p ${{ secrets.VM_TARGET_DIR }}"
+
+          # Use rsync for efficient transfer (only transfers changed files)
+          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" ./dist/ ${{ secrets.VM_USERNAME }}@${{ secrets.VM_HOST }}:${{ secrets.VM_TARGET_DIR }}
+
+      # Optional: SSH into VM to perform additional commands (e.g., restart Nginx/Apache)
+      - name: Execute post-deployment commands on VM
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock # Ensure the agent is used
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VM_USERNAME }}@${{ secrets.VM_HOST }} << 'EOF'
+            # Example: Restart Nginx/Apache (adjust as per your server setup)
+            # sudo systemctl restart nginx
+            # sudo systemctl restart apache2
+
+            # Example: Clear cache or perform other maintenance
+            # cd /var/www/videotube_frontend && some-command
+            echo "Deployment completed on VM."
+          EOF
